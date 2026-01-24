@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>MainPlatform</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MainPlatform.EntityFrameworkCore\MainPlatform.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\MainPlatform.Application.Tests\MainPlatform.Application.Tests.csproj" />
+    <ProjectReference Include="..\..\modules\OPAC\src\OPAC.EntityFrameworkCore\OPAC.EntityFrameworkCore.csproj" />
+    <PackageReference Include="Volo.Abp.EntityFrameworkCore.Sqlite" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+  </ItemGroup>
+
+</Project>

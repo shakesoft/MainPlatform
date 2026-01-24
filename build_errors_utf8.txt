@@ -1,0 +1,30 @@
+﻿  Determining projects to restore...
+D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatform.Blazor.csproj : warning NU1902: Package 'KubernetesClient' 15.0.1 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-w7r3-mgwf-4mqq
+  All projects are up-to-date for restore.
+D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatform.Blazor.csproj : warning NU1902: Package 'KubernetesClient' 15.0.1 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-w7r3-mgwf-4mqq
+  OPAC.Domain.Shared -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Domain.Shared\bin\Debug\net10.0\OPAC.Domain.Shared.dll
+  OPAC.Application.Contracts -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Application.Contracts\bin\Debug\net10.0\OPAC.Application.Contracts.dll
+  OPAC.Domain -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Domain\bin\Debug\net10.0\OPAC.Domain.dll
+  MainPlatform.Domain.Shared -> D:\ModulerPlatform\src\MainPlatform.Domain.Shared\bin\Debug\net10.0\MainPlatform.Domain.Shared.dll
+  OPAC.EntityFrameworkCore -> D:\ModulerPlatform\modules\OPAC\src\OPAC.EntityFrameworkCore\bin\Debug\net10.0\OPAC.EntityFrameworkCore.dll
+  OPAC.Application -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Application\bin\Debug\net10.0\OPAC.Application.dll
+  OPAC.HttpApi -> D:\ModulerPlatform\modules\OPAC\src\OPAC.HttpApi\bin\Debug\net10.0\OPAC.HttpApi.dll
+  OPAC.Blazor -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Blazor\bin\Debug\net10.0\OPAC.Blazor.dll
+  MainPlatform.Domain -> D:\ModulerPlatform\src\MainPlatform.Domain\bin\Debug\net10.0\MainPlatform.Domain.dll
+  MainPlatform.Application.Contracts -> D:\ModulerPlatform\src\MainPlatform.Application.Contracts\bin\Debug\net10.0\MainPlatform.Application.Contracts.dll
+  MainPlatform.EntityFrameworkCore -> D:\ModulerPlatform\src\MainPlatform.EntityFrameworkCore\bin\Debug\net10.0\MainPlatform.EntityFrameworkCore.dll
+  MainPlatform.Application -> D:\ModulerPlatform\src\MainPlatform.Application\bin\Debug\net10.0\MainPlatform.Application.dll
+  MainPlatform.HttpApi -> D:\ModulerPlatform\src\MainPlatform.HttpApi\bin\Debug\net10.0\MainPlatform.HttpApi.dll
+D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatformBlazorModule.cs(71,19): error CS0234: The type or namespace name 'Server' does not exist in the namespace 'OPAC.Blazor' (are you missing an assembly reference?) [D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatform.Blazor.csproj]
+D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatformBlazorModule.cs(100,12): error CS0246: The type or namespace name 'OPACBlazorServerModule' could not be found (are you missing a using directive or an assembly reference?) [D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatform.Blazor.csproj]
+
+Build FAILED.
+
+D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatform.Blazor.csproj : warning NU1902: Package 'KubernetesClient' 15.0.1 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-w7r3-mgwf-4mqq
+D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatform.Blazor.csproj : warning NU1902: Package 'KubernetesClient' 15.0.1 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-w7r3-mgwf-4mqq
+D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatformBlazorModule.cs(71,19): error CS0234: The type or namespace name 'Server' does not exist in the namespace 'OPAC.Blazor' (are you missing an assembly reference?) [D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatform.Blazor.csproj]
+D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatformBlazorModule.cs(100,12): error CS0246: The type or namespace name 'OPACBlazorServerModule' could not be found (are you missing a using directive or an assembly reference?) [D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatform.Blazor.csproj]
+    2 Warning(s)
+    2 Error(s)
+
+Time Elapsed 00:00:07.25

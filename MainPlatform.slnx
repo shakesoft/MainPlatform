@@ -1,0 +1,54 @@
+<Solution>
+  <Folder Name="/modules/" />
+  <Folder Name="/modules/OPAC/">
+    <Project Path="modules/OPAC/src/OPAC.Application.Contracts/OPAC.Application.Contracts.csproj" />
+    <Project Path="modules/OPAC/src/OPAC.Application/OPAC.Application.csproj" />
+    <Project Path="modules/OPAC/src/OPAC.Blazor.WebAssembly.Bundling/OPAC.Blazor.WebAssembly.Bundling.csproj" />
+    <Project Path="modules/OPAC/src/OPAC.Blazor.WebAssembly/OPAC.Blazor.WebAssembly.csproj" />
+    <Project Path="modules/OPAC/src/OPAC.Blazor/OPAC.Blazor.csproj" />
+    <Project Path="modules/OPAC/src/OPAC.Domain.Shared/OPAC.Domain.Shared.csproj" />
+    <Project Path="modules/OPAC/src/OPAC.Domain/OPAC.Domain.csproj" />
+    <Project Path="modules/OPAC/src/OPAC.EntityFrameworkCore/OPAC.EntityFrameworkCore.csproj" />
+    <Project Path="modules/OPAC/src/OPAC.HttpApi.Client/OPAC.HttpApi.Client.csproj" />
+    <Project Path="modules/OPAC/src/OPAC.HttpApi/OPAC.HttpApi.csproj" />
+    <Project Path="modules/OPAC/src/OPAC.Installer/OPAC.Installer.csproj" />
+    <Project Path="modules/OPAC/src/OPAC.MongoDB/OPAC.MongoDB.csproj" />
+    <Project Path="modules/OPAC/src/OPAC.Web/OPAC.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/MainPlatform.Application.Contracts/MainPlatform.Application.Contracts.csproj" />
+    <Project Path="src/MainPlatform.Application/MainPlatform.Application.csproj" />
+    
+    
+    
+    <Project Path="src/MainPlatform.Blazor/MainPlatform.Blazor.csproj" />
+    
+    
+    
+    
+    
+    <Project Path="src/MainPlatform.DbMigrator/MainPlatform.DbMigrator.csproj" />
+    <Project Path="src/MainPlatform.Domain.Shared/MainPlatform.Domain.Shared.csproj" />
+    <Project Path="src/MainPlatform.Domain/MainPlatform.Domain.csproj" />
+    <Project Path="src/MainPlatform.EntityFrameworkCore/MainPlatform.EntityFrameworkCore.csproj" />
+    
+    <Project Path="src/MainPlatform.HttpApi.Client/MainPlatform.HttpApi.Client.csproj" />
+    
+    
+    <Project Path="src/MainPlatform.HttpApi/MainPlatform.HttpApi.csproj" />
+    
+    
+    
+    
+    
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/MainPlatform.Application.Tests/MainPlatform.Application.Tests.csproj" />
+    <Project Path="test/MainPlatform.Domain.Tests/MainPlatform.Domain.Tests.csproj" />
+    <Project Path="test/MainPlatform.EntityFrameworkCore.Tests/MainPlatform.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="test/MainPlatform.HttpApi.Client.ConsoleTestApp/MainPlatform.HttpApi.Client.ConsoleTestApp.csproj" />
+    
+    <Project Path="test/MainPlatform.TestBase/MainPlatform.TestBase.csproj" />
+    
+  </Folder>
+</Solution>

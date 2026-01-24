@@ -1,0 +1,43 @@
+﻿  Determining projects to restore...
+D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatform.Blazor.csproj : warning NU1902: Package 'KubernetesClient' 15.0.1 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-w7r3-mgwf-4mqq [D:\ModulerPlatform\MainPlatform.slnx]
+  All projects are up-to-date for restore.
+  OPAC.Domain.Shared -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Domain.Shared\bin\Debug\net10.0\OPAC.Domain.Shared.dll
+  OPAC.Application.Contracts -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Application.Contracts\bin\Debug\net10.0\OPAC.Application.Contracts.dll
+  OPAC.HttpApi -> D:\ModulerPlatform\modules\OPAC\src\OPAC.HttpApi\bin\Debug\net10.0\OPAC.HttpApi.dll
+  OPAC.Installer -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Installer\bin\Debug\net10.0\OPAC.Installer.dll
+C:\Users\Administrator\.nuget\packages\microsoft.extensions.fileproviders.embedded\10.0.0\build\netstandard2.0\Microsoft.Extensions.FileProviders.Embedded.targets(19,5): warning : GenerateEmbeddedFilesManifest was set, but no EmbeddedResource items were found that could be added to the manifest. [D:\ModulerPlatform\modules\OPAC\src\OPAC.Web\OPAC.Web.csproj]
+  OPAC.Web -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Web\bin\Debug\net10.0\OPAC.Web.dll
+  MainPlatform.Domain.Shared -> D:\ModulerPlatform\src\MainPlatform.Domain.Shared\bin\Debug\net10.0\MainPlatform.Domain.Shared.dll
+  MainPlatform.Application.Contracts -> D:\ModulerPlatform\src\MainPlatform.Application.Contracts\bin\Debug\net10.0\MainPlatform.Application.Contracts.dll
+  OPAC.Domain -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Domain\bin\Debug\net10.0\OPAC.Domain.dll
+  OPAC.Blazor.WebAssembly.Bundling -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Blazor.WebAssembly.Bundling\bin\Debug\net10.0\OPAC.Blazor.WebAssembly.Bundling.dll
+  OPAC.Blazor -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Blazor\bin\Debug\net10.0\OPAC.Blazor.dll
+  OPAC.Application -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Application\bin\Debug\net10.0\OPAC.Application.dll
+D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatform.Blazor.csproj : warning NU1902: Package 'KubernetesClient' 15.0.1 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-w7r3-mgwf-4mqq
+  OPAC.HttpApi.Client -> D:\ModulerPlatform\modules\OPAC\src\OPAC.HttpApi.Client\bin\Debug\net10.0\OPAC.HttpApi.Client.dll
+  OPAC.MongoDB -> D:\ModulerPlatform\modules\OPAC\src\OPAC.MongoDB\bin\Debug\net10.0\OPAC.MongoDB.dll
+  MainPlatform.Domain -> D:\ModulerPlatform\src\MainPlatform.Domain\bin\Debug\net10.0\MainPlatform.Domain.dll
+  OPAC.EntityFrameworkCore -> D:\ModulerPlatform\modules\OPAC\src\OPAC.EntityFrameworkCore\bin\Debug\net10.0\OPAC.EntityFrameworkCore.dll
+  MainPlatform.TestBase -> D:\ModulerPlatform\test\MainPlatform.TestBase\bin\Debug\net10.0\MainPlatform.TestBase.dll
+  MainPlatform.EntityFrameworkCore -> D:\ModulerPlatform\src\MainPlatform.EntityFrameworkCore\bin\Debug\net10.0\MainPlatform.EntityFrameworkCore.dll
+  MainPlatform.HttpApi.Client -> D:\ModulerPlatform\src\MainPlatform.HttpApi.Client\bin\Debug\net10.0\MainPlatform.HttpApi.Client.dll
+  MainPlatform.DbMigrator -> D:\ModulerPlatform\src\MainPlatform.DbMigrator\bin\Debug\net10.0\MainPlatform.DbMigrator.dll
+  MainPlatform.HttpApi -> D:\ModulerPlatform\src\MainPlatform.HttpApi\bin\Debug\net10.0\MainPlatform.HttpApi.dll
+  MainPlatform.Application -> D:\ModulerPlatform\src\MainPlatform.Application\bin\Debug\net10.0\MainPlatform.Application.dll
+  MainPlatform.Domain.Tests -> D:\ModulerPlatform\test\MainPlatform.Domain.Tests\bin\Debug\net10.0\MainPlatform.Domain.Tests.dll
+  MainPlatform.Application.Tests -> D:\ModulerPlatform\test\MainPlatform.Application.Tests\bin\Debug\net10.0\MainPlatform.Application.Tests.dll
+  OPAC.Blazor.WebAssembly -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Blazor.WebAssembly\bin\Debug\net10.0\OPAC.Blazor.WebAssembly.dll
+  OPAC.Blazor.Server -> D:\ModulerPlatform\modules\OPAC\src\OPAC.Blazor.Server\bin\Debug\net10.0\OPAC.Blazor.Server.dll
+  MainPlatform.HttpApi.Client.ConsoleTestApp -> D:\ModulerPlatform\test\MainPlatform.HttpApi.Client.ConsoleTestApp\bin\Debug\net10.0\MainPlatform.HttpApi.Client.ConsoleTestApp.dll
+  MainPlatform.EntityFrameworkCore.Tests -> D:\ModulerPlatform\test\MainPlatform.EntityFrameworkCore.Tests\bin\Debug\net10.0\MainPlatform.EntityFrameworkCore.Tests.dll
+  MainPlatform.Blazor -> D:\ModulerPlatform\src\MainPlatform.Blazor\bin\Debug\net10.0\MainPlatform.Blazor.dll
+
+Build succeeded.
+
+D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatform.Blazor.csproj : warning NU1902: Package 'KubernetesClient' 15.0.1 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-w7r3-mgwf-4mqq [D:\ModulerPlatform\MainPlatform.slnx]
+C:\Users\Administrator\.nuget\packages\microsoft.extensions.fileproviders.embedded\10.0.0\build\netstandard2.0\Microsoft.Extensions.FileProviders.Embedded.targets(19,5): warning : GenerateEmbeddedFilesManifest was set, but no EmbeddedResource items were found that could be added to the manifest. [D:\ModulerPlatform\modules\OPAC\src\OPAC.Web\OPAC.Web.csproj]
+D:\ModulerPlatform\src\MainPlatform.Blazor\MainPlatform.Blazor.csproj : warning NU1902: Package 'KubernetesClient' 15.0.1 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-w7r3-mgwf-4mqq
+    3 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:12.62

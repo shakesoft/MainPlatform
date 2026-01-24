@@ -1,0 +1,112 @@
+{
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {},
+      "host": {}
+    }
+  },
+  "packages": {
+    "OPAC.Domain.Shared": {
+      "path": "src/OPAC.Domain.Shared/OPAC.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "OPAC.Domain": {
+      "path": "src/OPAC.Domain/OPAC.Domain.abppkg",
+      "folder": "src"
+    },
+    "OPAC.Application.Contracts": {
+      "path": "src/OPAC.Application.Contracts/OPAC.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "OPAC.Application": {
+      "path": "src/OPAC.Application/OPAC.Application.abppkg",
+      "folder": "src"
+    },
+    "OPAC.EntityFrameworkCore": {
+      "path": "src/OPAC.EntityFrameworkCore/OPAC.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "OPAC.MongoDB": {
+      "path": "src/OPAC.MongoDB/OPAC.MongoDB.abppkg",
+      "folder": "src"
+    },
+    "OPAC.HttpApi": {
+      "path": "src/OPAC.HttpApi/OPAC.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "OPAC.HttpApi.Client": {
+      "path": "src/OPAC.HttpApi.Client/OPAC.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "OPAC.TestBase": {
+      "path": "test/OPAC.TestBase/OPAC.TestBase.abppkg",
+      "folder": "test"
+    },
+    "OPAC.EntityFrameworkCore.Tests": {
+      "path": "test/OPAC.EntityFrameworkCore.Tests/OPAC.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "OPAC.MongoDB.Tests": {
+      "path": "test/OPAC.MongoDB.Tests/OPAC.MongoDB.Tests.abppkg",
+      "folder": "test"
+    },
+    "OPAC.Domain.Tests": {
+      "path": "test/OPAC.Domain.Tests/OPAC.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "OPAC.Application.Tests": {
+      "path": "test/OPAC.Application.Tests/OPAC.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "OPAC.HttpApi.Host": {
+      "path": "host/OPAC.HttpApi.Host/OPAC.HttpApi.Host.abppkg",
+      "folder": "host"
+    },
+    "OPAC.Web": {
+      "path": "src/OPAC.Web/OPAC.Web.abppkg",
+      "folder": "src"
+    },
+    "OPAC.HttpApi.Client.ConsoleTestApp": {
+      "path": "test/OPAC.HttpApi.Client.ConsoleTestApp/OPAC.HttpApi.Client.ConsoleTestApp.abppkg",
+      "folder": "test"
+    },
+    "OPAC.Web.Host": {
+      "path": "host/OPAC.Web.Host/OPAC.Web.Host.abppkg",
+      "folder": "host"
+    },
+    "OPAC.AuthServer": {
+      "path": "host/OPAC.AuthServer/OPAC.AuthServer.abppkg",
+      "folder": "host"
+    },
+    "OPAC.Host.Shared": {
+      "path": "host/OPAC.Host.Shared/OPAC.Host.Shared.abppkg",
+      "folder": "host"
+    },
+    "OPAC.Web.Unified": {
+      "path": "host/OPAC.Web.Unified/OPAC.Web.Unified.abppkg",
+      "folder": "host"
+    },
+    "OPAC.Blazor": {
+      "path": "src/OPAC.Blazor/OPAC.Blazor.abppkg",
+      "folder": "src"
+    },
+    "OPAC.Blazor.Host": {
+      "path": "host/OPAC.Blazor.Host/OPAC.Blazor.Host.abppkg",
+      "folder": "host"
+    },
+    "OPAC.Blazor.Server": {
+      "path": "src/OPAC.Blazor.Server/OPAC.Blazor.Server.abppkg",
+      "folder": "src"
+    },
+    "OPAC.Blazor.WebAssembly": {
+      "path": "src/OPAC.Blazor.WebAssembly/OPAC.Blazor.WebAssembly.abppkg",
+      "folder": "src"
+    },
+    "OPAC.Blazor.Server.Host": {
+      "path": "host/OPAC.Blazor.Server.Host/OPAC.Blazor.Server.Host.abppkg",
+      "folder": "host"
+    }
+  },
+  "moduleId": "3a0a2f2e-1f1b-166b-32da-4a93ca2f5e59"
+}

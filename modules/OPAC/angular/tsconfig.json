@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.prod.json",
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@o-pAC": [
+        "projects/o-pAC/src/public-api.ts"
+      ],
+      "@o-pAC/config": [
+        "projects/o-pAC/config/src/public-api.ts"
+      ],
+      "@proxy": ["projects/o-pAC/src/lib/proxy/index.ts"],
+      "@proxy/*": ["projects/o-pAC/src/lib/proxy/*"]
+    }
+  }
+}

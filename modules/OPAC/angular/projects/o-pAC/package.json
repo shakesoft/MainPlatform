@@ -1,0 +1,13 @@
+{
+  "name": "@o-pAC",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "~19.1.0",
+    "@angular/core": "~19.1.0",
+    "@abp/ng.core": "~10.0.2",
+    "@abp/ng.theme.shared": "~10.0.2"
+  },
+  "dependencies": {
+    "tslib": "^2.1.0"
+  }
+}

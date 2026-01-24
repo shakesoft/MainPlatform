@@ -1,0 +1,7 @@
+{
+  "modules": {
+    "OPAC": {
+      "path": "OPAC.abpmdl"
+    }
+  }
+}

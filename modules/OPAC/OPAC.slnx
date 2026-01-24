@@ -1,0 +1,36 @@
+<Solution>
+  <Folder Name="/host/">
+    <Project Path="host/OPAC.AuthServer/OPAC.AuthServer.csproj" />
+    <Project Path="host/OPAC.Blazor.Host.Client/OPAC.Blazor.Host.Client.csproj" />
+    <Project Path="host/OPAC.Blazor.Host/OPAC.Blazor.Host.csproj" />
+    <Project Path="host/OPAC.Blazor.Server.Host/OPAC.Blazor.Server.Host.csproj" />
+    <Project Path="host/OPAC.Host.Shared/OPAC.Host.Shared.csproj" />
+    <Project Path="host/OPAC.HttpApi.Host/OPAC.HttpApi.Host.csproj" />
+    <Project Path="host/OPAC.Web.Host/OPAC.Web.Host.csproj" />
+    <Project Path="host/OPAC.Web.Unified/OPAC.Web.Unified.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/OPAC.Application.Contracts/OPAC.Application.Contracts.csproj" />
+    <Project Path="src/OPAC.Application/OPAC.Application.csproj" />
+    <Project Path="src/OPAC.Blazor.Server/OPAC.Blazor.Server.csproj" />
+    <Project Path="src/OPAC.Blazor.WebAssembly.Bundling/OPAC.Blazor.WebAssembly.Bundling.csproj" />
+    <Project Path="src/OPAC.Blazor.WebAssembly/OPAC.Blazor.WebAssembly.csproj" />
+    <Project Path="src/OPAC.Blazor/OPAC.Blazor.csproj" />
+    <Project Path="src/OPAC.Domain.Shared/OPAC.Domain.Shared.csproj" />
+    <Project Path="src/OPAC.Domain/OPAC.Domain.csproj" />
+    <Project Path="src/OPAC.EntityFrameworkCore/OPAC.EntityFrameworkCore.csproj" />
+    <Project Path="src/OPAC.HttpApi.Client/OPAC.HttpApi.Client.csproj" />
+    <Project Path="src/OPAC.HttpApi/OPAC.HttpApi.csproj" />
+    <Project Path="src/OPAC.Installer/OPAC.Installer.csproj" />
+    <Project Path="src/OPAC.MongoDB/OPAC.MongoDB.csproj" />
+    <Project Path="src/OPAC.Web/OPAC.Web.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/OPAC.Application.Tests/OPAC.Application.Tests.csproj" />
+    <Project Path="test/OPAC.Domain.Tests/OPAC.Domain.Tests.csproj" />
+    <Project Path="test/OPAC.EntityFrameworkCore.Tests/OPAC.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="test/OPAC.HttpApi.Client.ConsoleTestApp/OPAC.HttpApi.Client.ConsoleTestApp.csproj" />
+    <Project Path="test/OPAC.MongoDB.Tests/OPAC.MongoDB.Tests.csproj" />
+    <Project Path="test/OPAC.TestBase/OPAC.TestBase.csproj" />
+  </Folder>
+</Solution>
