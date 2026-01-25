@@ -1,0 +1,127 @@
+@using Microsoft.JSInterop
+@using Radzen.Blazor
+@using Radzen.Blazor.Rendering
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+    <div @ref=@element class="@($"{"rz-event"} {CssClass}".Trim())" style=@Style @onclick=@OnClick @onmouseenter=@OnMouseEnter @onmouseleave=@OnMouseLeave>
+        <div class="rz-event-content" title=@Title @attributes=@Attributes>
+            @if (ShowAppointmentContent)
+            {
+                @Scheduler.RenderAppointment(Data)
+            }
+        </div>
+    </div>
+@code {
+    private ElementReference element;
+
+    private string Title => Scheduler.HasMouseEnterAppointmentDelegate() ? null : Data?.Text;
+
+    [Parameter]
+    public string CssClass { get; set; }
+
+    [Parameter]
+    public double? Top { get; set; }
+
+    [Parameter]
+    public double? Left { get; set; }
+
+    [Parameter]
+    public double? Width { get; set; }
+
+    [Parameter]
+    public double? Height { get; set; }
+
+    [Parameter]
+    public EventCallback<AppointmentData> Click { get; set; }
+
+    [Parameter]
+    public EventCallback<AppointmentData> DragStart { get; set; }
+
+    IDictionary<string, object> Attributes { get; set; }
+
+    [Parameter]
+    public AppointmentData Data { get; set; }
+
+    [Parameter]
+    public bool ShowAppointmentContent { get; set; } = true;
+
+    [CascadingParameter]
+    public IScheduler Scheduler { get; set; }
+
+    string Style { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        Attributes = Scheduler.GetAppointmentAttributes(Data);
+
+        var style = new List<string>();
+
+        if (Top.HasValue)
+        {
+            style.Add($"inset-block-start: {Top.ToInvariantString()}em");
+        }
+
+        if (Left.HasValue)
+        {
+            style.Add($"inset-inline-start: {Left.ToInvariantString()}%");
+        }
+
+        if (Width.HasValue)
+        {
+            style.Add($"width: {Width.ToInvariantString()}%");
+        }
+
+        if (Height.HasValue)
+        {
+            style.Add($"height: {Height.ToInvariantString()}em");
+        }
+
+        Style = String.Join(";", style);
+    }
+
+    async Task OnClick()
+    {
+        await Click.InvokeAsync(Data);
+    }
+
+    async Task OnMouseEnter()
+    {
+        await Scheduler.MouseEnterAppointment(element, Data);
+    }
+
+    async Task OnMouseLeave()
+    {
+        await Scheduler.MouseLeaveAppointment(element, Data);
+    }
+
+    [JSInvokable]
+    public async Task OnDragStartAsync()
+    {
+        await DragStart.InvokeAsync(Data);
+    }
+
+    private DotNetObjectReference<Appointment> dotnetRef;
+
+    private IJSObjectReference jsRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Scheduler?.HasAppointmentMoveDelegate() == true)
+        {
+            dotnetRef = DotNetObjectReference.Create(this);
+            jsRef = await JSRuntime.InvokeAsync<IJSObjectReference>("Radzen.createDraggable", element, dotnetRef, nameof(OnDragStartAsync));
+        }
+    }
+
+
+    public async ValueTask DisposeAsync()
+    {
+        if (jsRef != null)
+        {
+            await jsRef.InvokeVoidAsync("dispose");
+            await jsRef.DisposeAsync();
+        }
+        dotnetRef?.Dispose();
+    }
+}

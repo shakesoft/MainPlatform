@@ -1,0 +1,13 @@
+﻿@inherits RadzenComponentWithChildren
+
+@if (Visible)
+{
+    <ul @ref=@Element style=@Style @attributes=@Attributes class=@GetCssClass() id=@GetId() tabindex="0"
+        @onkeydown=@OnKeyPress
+        @onkeydown:preventDefault=preventKeyPress @onkeydown:stopPropagation
+        @onfocus=@this.AsNonRenderingEventHandler(OnFocus)>
+        <CascadingValue Value=this>
+            @ChildContent
+        </CascadingValue>
+    </ul>
+}

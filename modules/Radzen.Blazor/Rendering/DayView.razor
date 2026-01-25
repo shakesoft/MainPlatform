@@ -1,0 +1,137 @@
+@using Radzen.Blazor
+@inherits DropableViewBase
+
+<div class="rz-view rz-day-view">
+    <div class="rz-view-header" @onclick=@(args => OnDayClick(@StartDate))>
+        <div class="rz-slot-hour-header"></div>
+        <div class="rz-slot-header">
+            @StartDate.ToString("ddd", Scheduler.Culture)
+        </div>
+    </div>
+    <div @ref=view class="rz-view-content" tabindex="0" @onkeydown="@(args => OnKeyPress(args))" @onkeydown:preventDefault="@preventKeyPress" @onkeydown:stopPropagation
+         @onfocus=@this.AsNonRenderingEventHandler(OnFocus)>
+        <Hours Start=@StartTime End=@EndTime TimeFormat=@TimeFormat MinutesPerSlot=@MinutesPerSlot />
+        <div class="rz-slots">
+            <DaySlotEvents MinutesPerSlot=@MinutesPerSlot StartDate=@StartDate EndDate=@EndDate Appointments=@Appointments CurrentDate="@CurrentDate" CurrentAppointment="@currentAppointment" AppointmentDragStart=@OnAppointmentDragStart />
+            @for (var date = StartDate; date < EndDate; date = date.AddMinutes(MinutesPerSlot))
+            {
+                var slotDate = date;
+                    <div @onclick=@(args => OnSlotClick(slotDate)) ondragover="event.preventDefault();" @ondrop=@(args => @OnDrop(slotDate)) @attributes=@Attributes(date)></div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    void OnFocus()
+    {
+        if (CurrentDate == default(DateTime)) 
+        { 
+            CurrentDate = StartDate; 
+        }
+    }
+
+    ElementReference view;
+
+    [Parameter]
+    public DateTime StartDate { get; set; }
+
+    [Parameter]
+    public TimeSpan StartTime { get; set; }
+
+    [Parameter]
+    public DateTime EndDate { get; set; }
+
+    [Parameter]
+    public TimeSpan EndTime { get; set; }
+
+    [Parameter]
+    public string TimeFormat { get; set; }
+
+    [Parameter]
+    public int MinutesPerSlot { get; set; }
+
+    [Parameter]
+    public IList<AppointmentData> Appointments { get; set; }
+
+    [CascadingParameter]
+    public IScheduler Scheduler { get; set; }
+
+    private AppointmentData[] AppointmentsInSlot(DateTime start, DateTime end)
+    {
+        if (Appointments == null)
+        {
+            return Array.Empty<AppointmentData>();
+        }
+
+        return Appointments.Where(item => Scheduler.IsAppointmentInRange(item, start, end)).OrderBy(item => item.Start).ThenByDescending(item => item.End).ToArray();
+    }
+
+    async Task OnSlotClick(DateTime date)
+    {
+        await Scheduler.SelectSlot(date, date.AddMinutes(MinutesPerSlot), AppointmentsInSlot(date, date.AddMinutes(MinutesPerSlot)));
+    }
+
+    async Task OnDayClick(DateTime day)
+    {
+        var dayStart = day.Date.Add(StartTime);
+        var dayEnd = day.Date.Add(EndTime);
+        await Scheduler.SelectDay(day.Date, AppointmentsInSlot(dayStart, dayEnd));
+    }
+
+    IDictionary<string, object> Attributes(DateTime date)
+    {
+        var attributes = Scheduler.GetSlotAttributes(date, date.AddMinutes(MinutesPerSlot), () => AppointmentsInSlot(date, date.AddMinutes(MinutesPerSlot)));
+        attributes["class"] = ClassList.Create("rz-slot").Add("rz-slot-minor", (date.Minute / MinutesPerSlot) % 2 == 1).Add(attributes).ToString();
+        attributes["dropzone"] = "move";
+        return attributes;
+    }
+
+    DateTime CurrentDate;
+    int currentAppointment = -1;
+    IEnumerable<AppointmentData> currentAppointments = Enumerable.Empty<AppointmentData>();
+    bool preventKeyPress = false;
+
+    async Task OnKeyPress(KeyboardEventArgs args)
+    {
+        var key = args.Code != null ? args.Code : args.Key;
+        var arrow = key == "ArrowLeft" || key == "ArrowRight" || key == "ArrowUp" || key == "ArrowDown";
+        var updown = key == "ArrowUp" || key == "ArrowDown";
+        var leftright = key == "ArrowLeft" || key == "ArrowRight";
+
+        var dayStart = CurrentDate.Date.Add(StartTime);
+        var dayEnd = CurrentDate.Date.Add(EndTime);
+        currentAppointments = AppointmentsInSlot(dayStart, dayEnd);
+
+        if (arrow && currentAppointments.Any())
+        {
+            if (updown || leftright)
+            {
+                currentAppointment = Math.Clamp(currentAppointment + (key == "ArrowUp" || key == "ArrowLeft" ? -1 : 1), 0, currentAppointments.Count() - 1);
+            }
+
+            preventKeyPress = true;
+        }
+        else if (key == "Enter")
+        {
+            await OnSlotClick(CurrentDate);
+            await view.FocusAsync();
+
+            preventKeyPress = true;
+        }
+        else if (key == "Space")
+        {
+            if (currentAppointments.Any())
+            {
+                await Scheduler.SelectAppointment(currentAppointments.ElementAt(currentAppointment));
+                await view.FocusAsync();
+            }
+
+            preventKeyPress = true;
+        }
+        else
+        {
+            preventKeyPress = false;
+        }
+    }
+}

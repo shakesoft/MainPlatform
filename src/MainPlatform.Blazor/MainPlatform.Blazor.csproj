@@ -29,8 +29,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\modules\Radzen.Blazor\Radzen.Blazor.csproj" />
     <ProjectReference Include="..\..\modules\OPAC\src\OPAC.Blazor\OPAC.Blazor.csproj" />
+    <ProjectReference Include="..\..\modules\OPAC\src\OPAC.Blazor.Server\OPAC.Blazor.Server.csproj" />
     <ProjectReference Include="..\..\modules\OPAC\src\OPAC.Domain\OPAC.Domain.csproj" />
+    <ProjectReference Include="..\..\modules\OPAC\src\OPAC.Domain.Shared\OPAC.Domain.Shared.csproj" />
+    <ProjectReference Include="..\..\modules\OPAC\src\OPAC.Application\OPAC.Application.csproj" />
+    <ProjectReference Include="..\..\modules\OPAC\src\OPAC.Application.Contracts\OPAC.Application.Contracts.csproj" />
+    <ProjectReference Include="..\..\modules\OPAC\src\OPAC.EntityFrameworkCore\OPAC.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\modules\OPAC\src\OPAC.HttpApi\OPAC.HttpApi.csproj" />
     <ProjectReference Include="..\MainPlatform.Application\MainPlatform.Application.csproj" />
     <ProjectReference Include="..\MainPlatform.HttpApi\MainPlatform.HttpApi.csproj" />
     <ProjectReference Include="..\MainPlatform.EntityFrameworkCore\MainPlatform.EntityFrameworkCore.csproj" />

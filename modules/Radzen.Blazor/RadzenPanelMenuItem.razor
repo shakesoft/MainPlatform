@@ -1,0 +1,70 @@
+﻿@using Radzen.Blazor.Rendering
+@using Microsoft.AspNetCore.Components.Routing
+@inherits RadzenComponent
+@if (Visible)
+{
+    <li @ref=@Element style=@Style @attributes=@Attributes class=@GetCssClass() id=@GetId() @onclick=@(this.AsNonRenderingEventHandler<MouseEventArgs>(OnClick)) @onclick:stopPropagation>
+        <div class=@WrapperClass>
+            @if (Path != null)
+            {
+                <NavLink tabindex="-1" target="@Target" class=@LinkClass style="@(Parent?.DisplayStyle == MenuItemDisplayStyle.Icon?"margin-inline-end:0px;":"")" href="@Path" Match="@Match">
+                    @if (!string.IsNullOrEmpty(Icon) && (Parent?.DisplayStyle == MenuItemDisplayStyle.Icon || Parent?.DisplayStyle == MenuItemDisplayStyle.IconAndText))
+                    {
+                        <i class="notranslate rzi rz-navigation-item-icon" style="@getIconStyle()">@Icon</i>
+                    }
+                    @if (!string.IsNullOrEmpty(Image) && (Parent?.DisplayStyle == MenuItemDisplayStyle.Icon || Parent?.DisplayStyle == MenuItemDisplayStyle.IconAndText))
+                    {
+                        <img class="notranslate rz-navigation-item-icon" src="@Image" alt=@ImageAlternateText />
+                    }
+                    @if (Template != null)
+                    {
+                        @Template
+                    }
+                    else if (Parent?.DisplayStyle == MenuItemDisplayStyle.Text || Parent?.DisplayStyle == MenuItemDisplayStyle.IconAndText)
+                    {
+                        <span class="rz-navigation-item-text" @onclick="@Toggle">@Text</span>
+                    }
+                    @if (ChildContent != null && Parent?.ShowArrow == true)
+                    {
+                        <i class=@ToggleClass @onclick="@Toggle" @onclick:preventDefault>keyboard_arrow_down</i>
+                    }
+                </NavLink>
+            }
+            else
+            {
+                <div class="rz-navigation-item-link" style="@(Parent?.DisplayStyle == MenuItemDisplayStyle.Icon?"margin-inline-end:0px;":"")" @onclick="@Toggle">
+                    @if (!string.IsNullOrEmpty(Icon) && (Parent?.DisplayStyle == MenuItemDisplayStyle.Icon || Parent?.DisplayStyle == MenuItemDisplayStyle.IconAndText))
+                    {
+                        <i class="notranslate rzi rz-navigation-item-icon" style="@getIconStyle()">@Icon</i>
+                    }
+                    @if (!string.IsNullOrEmpty(Image) && (Parent?.DisplayStyle == MenuItemDisplayStyle.Icon || Parent?.DisplayStyle == MenuItemDisplayStyle.IconAndText))
+                    {
+                        <img class="notranslate rz-navigation-item-icon" src="@Image" alt=@ImageAlternateText />
+                    }
+                    @if (Template != null)
+                    {
+                        @Template
+                    }
+                    else if (Parent?.DisplayStyle == MenuItemDisplayStyle.Text || Parent?.DisplayStyle == MenuItemDisplayStyle.IconAndText)
+                    {
+                        <span class="rz-navigation-item-text">@Text</span>
+                    }
+                    @if (ChildContent != null && Parent?.ShowArrow == true)
+                    {
+                        <i class=@ToggleClass>keyboard_arrow_down</i>
+                    }
+                </div>
+            }
+        </div>
+        @if (ChildContent != null)
+        {
+            <Expander Expanded=@expanded>
+                <ul class="rz-navigation-menu">
+                    <CascadingValue Value=this>
+                        @ChildContent
+                    </CascadingValue>
+                </ul>
+            </Expander>
+        }
+    </li>
+}

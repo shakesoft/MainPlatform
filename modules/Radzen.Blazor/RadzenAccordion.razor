@@ -1,0 +1,48 @@
+﻿@using System.Linq
+@using Radzen.Blazor.Rendering
+
+@inherits RadzenComponent
+
+@if (Items != null)
+{
+    <CascadingValue Value=this>
+        @Items
+    </CascadingValue>
+}
+@if (Visible)
+{
+<div @ref="@Element" role="tablist" style=@Style @attributes="Attributes" class="@GetCssClass()" id="@GetId()" 
+    tabindex="0" @onkeydown="@((args) => OnKeyPress(args))" @onkeydown:preventDefault=preventKeyPress @onkeydown:stopPropagation=preventKeyPress>
+    @for (var i = 0; i < items.Count; i++)
+    {
+        var item = items[i];    
+        if (!item.Visible)
+            continue;
+
+        <div @ref="@item.Element" id="@item.GetItemId()" @attributes="item.Attributes" class="@item.GetItemCssClass()" style="@item.Style" @onkeydown:stopPropagation>
+            <a @onclick="@((args) => SelectItem(item))" aria-label="@ItemAriaLabel(i, item)" title="@ItemTitle(i, item)" @onclick:preventDefault="true" role="tab" 
+               id="@($"rz-accordiontab-{items.IndexOf(item)}")" aria-controls="@($"rz-accordiontab-{items.IndexOf(item)}-content")" aria-expanded="true">
+                <span class="@ToggleIconClass(item)">keyboard_arrow_down</span>
+                @if (!string.IsNullOrEmpty(item.Icon))
+                {
+            <i class="notranslate rzi" style="@(!string.IsNullOrEmpty(item.IconColor) ? $"color:{item.IconColor}" : null)">@item.Icon</i>
+                }
+                @if (item.Template != null)
+                {
+                    @item.Template
+                }
+                else if(!string.IsNullOrEmpty(item.Text))
+                {
+                    <span>@item.Text</span>
+                }
+            </a>
+        </div>
+        <Expander Expanded=@item.GetSelected() role="tabpanel"
+                id="@($"rz-accordiontab-{items.IndexOf(item)}-content")" aria-labelledby="@($"rz-accordiontab-{items.IndexOf(item)}")">
+            <div class="rz-accordion-content" @onkeydown:stopPropagation>
+                @item.ChildContent
+            </div>
+        </Expander>
+    }
+</div>
+}

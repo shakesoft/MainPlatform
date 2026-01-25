@@ -22,6 +22,9 @@ using MainPlatform.MultiTenancy;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Options;
 using MainPlatform.Blazor.Components;
+using OPAC;
+using OPAC.Blazor;
+using OPAC.Blazor.Server;
 using Volo.Abp;
 using Volo.Abp.Account.Pro.Admin.Blazor.Server;
 using Volo.Abp.Account.Pro.Public.Blazor.Server;
@@ -94,8 +97,8 @@ namespace MainPlatform.Blazor;
     typeof(AbpFeatureManagementBlazorServerModule),
     typeof(AbpSettingManagementBlazorServerModule),
     typeof(AbpPermissionManagementBlazorServerModule),
-    typeof(global::OPAC.Blazor.OPACBlazorModule),
-    typeof(global::OPAC.Blazor.Server.OPACBlazorServerModule)
+    typeof(OPACBlazorModule),
+    typeof(OPACBlazorServerModule)
    )]
 public class MainPlatformBlazorModule : AbpModule
 {
@@ -113,12 +116,12 @@ public class MainPlatformBlazorModule : AbpModule
                 typeof(MainPlatformApplicationModule).Assembly,
                 typeof(MainPlatformApplicationContractsModule).Assembly,
                 typeof(MainPlatformBlazorModule).Assembly,
-                typeof(global::OPAC.OPACDomainModule).Assembly,
-                typeof(global::OPAC.OPACDomainSharedModule).Assembly,
-                typeof(global::OPAC.OPACApplicationModule).Assembly,
-                typeof(global::OPAC.OPACApplicationContractsModule).Assembly,
-                typeof(global::OPAC.Blazor.OPACBlazorModule).Assembly,
-                typeof(global::OPAC.Blazor.Server.OPACBlazorServerModule).Assembly
+                typeof(OPACDomainModule).Assembly,
+                typeof(OPACDomainSharedModule).Assembly,
+                typeof(OPACApplicationModule).Assembly,
+                typeof(OPACApplicationContractsModule).Assembly,
+                typeof(OPACBlazorModule).Assembly,
+                typeof(OPACBlazorServerModule).Assembly
             );
         });
 
@@ -187,6 +190,8 @@ public class MainPlatformBlazorModule : AbpModule
         ConfigureCookieConsent(context);
         ConfigureTheme();
         context.Services.AddMapperlyObjectMapper<MainPlatformBlazorModule>();
+       //
+       //context.Services.AddRadzenComponents();
     }
 
     private void ConfigureCookieConsent(ServiceConfigurationContext context)
@@ -256,6 +261,15 @@ public class MainPlatformBlazorModule : AbpModule
                     bundle.AddFiles("/blazor-global-styles.css");
                     //You can remove the following line if you don't use Blazor CSS isolation for components
                     bundle.AddFiles(new BundleFile("/MainPlatform.Blazor.styles.css", true));
+                    bundle.AddFiles("/_content/Radzen.Blazor/css/default.css");
+                }
+            );
+
+            options.ScriptBundles.Configure(
+                BlazorLeptonXThemeBundles.Scripts.Global,
+                bundle =>
+                {
+                    bundle.AddFiles("/_content/Radzen.Blazor/Radzen.Blazor.js");
                 }
             );
         });
