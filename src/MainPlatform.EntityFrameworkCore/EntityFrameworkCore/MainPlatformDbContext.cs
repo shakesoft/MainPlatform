@@ -63,6 +63,11 @@ public class MainPlatformDbContext :
 
     #endregion
 
+    #region Main Platform Entities
+    public DbSet<Entities.MainDepartmentInfo> MainDepartmentInfo { get; set; }
+
+    #endregion
+
     public MainPlatformDbContext(DbContextOptions<MainPlatformDbContext> options)
         : base(options)
     {

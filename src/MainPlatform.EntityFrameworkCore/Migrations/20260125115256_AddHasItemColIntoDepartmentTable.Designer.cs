@@ -4,6 +4,7 @@ using MainPlatform.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace MainPlatform.Migrations
 {
     [DbContext(typeof(MainPlatformDbContext))]
-    partial class MainPlatformDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260125115256_AddHasItemColIntoDepartmentTable")]
+    partial class AddHasItemColIntoDepartmentTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
