@@ -1,0 +1,279 @@
+@page "/Account/TwoFactorAuthentication"
+@using MainPlatform.Identity
+@using MainPlatform.Localization
+@using Microsoft.Extensions.Localization
+@using Radzen
+@using Radzen.Blazor
+@inject ITwoFactorAppService TwoFactorAppService
+@inject IStringLocalizer<MainPlatformResource> L
+@attribute [Authorize]
+
+<RadzenStack Gap="2rem" Class="rz-p-4 rz-p-md-12">
+    <RadzenRow JustifyContent="Radzen.JustifyContent.Center">
+        <RadzenColumn Size="12" SizeMD="8" SizeLG="6">
+            <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Class="rz-mb-4">
+                <RadzenIcon Icon="security" Style="font-size: 2rem; color: var(--rz-primary);" />
+                <RadzenText TextStyle="TextStyle.H4" TagName="TagName.H1" Class="rz-m-0 rz-color-primary" Style="font-weight: bold;">
+                    @L["TwoFactorAuthentication"]
+                </RadzenText>
+            </RadzenStack>
+
+            @if (isLoading)
+            {
+                <RadzenCard Variant="Variant.Filled" Class="rz-text-align-center rz-p-12">
+                    <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Medium" />
+                    <RadzenText TextStyle="TextStyle.Body1" Class="rz-mt-4 rz-color-text-secondary">@L["Loading"]</RadzenText>
+                </RadzenCard>
+            }
+            else
+            {
+                <RadzenCard Variant="Variant.Filled" Class="rz-shadow-10 rz-border-radius-2 rz-p-6 rz-p-md-10">
+                    <RadzenStack Gap="1.5rem">
+                        @if (isTwoFactorEnabled)
+                        {
+                            <RadzenAlert AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false" Size="AlertSize.Large">
+                                <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
+                                    <RadzenIcon Icon="check_circle" Style="font-size: 2.5rem;" />
+                                    <RadzenStack Gap="0">
+                                        <RadzenText TextStyle="TextStyle.H6" Class="rz-m-0" Style="font-weight: bold;">@L["TwoFactorEnabled"]</RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body2" Class="rz-m-0">@L["TwoFactorEnabledDescription"]</RadzenText>
+                                    </RadzenStack>
+                                </RadzenStack>
+                            </RadzenAlert>
+
+                            <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" Class="rz-mt-4">
+                                <RadzenButton Text="@L["DisableTwoFactor"]" Icon="power_settings_new" ButtonStyle="ButtonStyle.Danger" 
+                                              Variant="Variant.Outlined" Click="@DisableTwoFactor" Size="ButtonSize.Large" 
+                                              Style="border-radius: 25px; font-weight: bold; width: 100%; max-width: 300px;" />
+                            </RadzenStack>
+                        }
+                        else
+                        {
+                            <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false" Size="AlertSize.Large">
+                                <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
+                                    <RadzenIcon Icon="warning" Style="font-size: 2.5rem;" />
+                                    <RadzenStack Gap="0">
+                                        <RadzenText TextStyle="TextStyle.H6" Class="rz-m-0" Style="font-weight: bold;">@L["TwoFactorDisabled"]</RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body2" Class="rz-m-0">@L["TwoFactorDisabledDescription"]</RadzenText>
+                                    </RadzenStack>
+                                </RadzenStack>
+                            </RadzenAlert>
+
+                            @if (string.IsNullOrEmpty(qrCodeUri))
+                            {
+                                <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" Class="rz-mt-4">
+                                    <RadzenButton Text="@L["EnableTwoFactor"]" Icon="add_moderator" ButtonStyle="ButtonStyle.Primary" 
+                                                  Variant="Variant.Filled" Click="@EnableTwoFactor" Size="ButtonSize.Large" 
+                                                  Style="border-radius: 25px; font-weight: bold; width: 100%; max-width: 300px;" />
+                                </RadzenStack>
+                            }
+                            else
+                            {
+                                <RadzenStack Gap="2rem" Class="rz-mt-4 animate-fade-in">
+                                    <RadzenStack AlignItems="AlignItems.Center" Gap="1rem">
+                                        <RadzenText TextStyle="TextStyle.H6" Style="font-weight: bold;">@L["ScanQRCode"]</RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body2" Class="rz-text-align-center rz-px-6">@L["ScanQRCodeDescription"]</RadzenText>
+                                        
+                                        <RadzenCard Variant="Variant.Outlined" Class="rz-background-color-white rz-p-3 rz-border-radius-2 rz-shadow-2">
+                                            <img src="@qrCodeUri" alt="QR Code" style="width: 200px; height: 200px;" />
+                                        </RadzenCard>
+                                    </RadzenStack>
+
+                                    <RadzenStack Gap="0.5rem" Class="rz-mb-2">
+                                        <RadzenText TextStyle="TextStyle.Overline" Style="font-weight: bold; color: var(--rz-text-secondary-color);" Class="rz-text-align-center rz-m-0">
+                                            @L["ManualEntry"]
+                                        </RadzenText>
+                                        <RadzenCard Variant="Variant.Filled" Class="rz-background-color-info-lighter rz-p-4 rz-text-align-center" Style="border: 2px dashed var(--rz-info); border-radius: 12px; overflow: hidden;">
+                                            <RadzenText TextStyle="TextStyle.Subtitle1" Class="rz-m-0 rz-color-info" 
+                                                        Style="font-family: monospace; letter-spacing: 2px; font-weight: bold; word-break: break-all; line-height: 1.5;">
+                                                @sharedKey
+                                            </RadzenText>
+                                        </RadzenCard>
+                                    </RadzenStack>
+
+                                    <RadzenStack Gap="0.5rem">
+                                        <RadzenText TextStyle="TextStyle.Caption" Style="font-weight: bold; text-transform: uppercase;">@L["VerificationCode"]</RadzenText>
+                                        <RadzenTextBox @bind-Value="verificationCode" Placeholder="000000" MaxLength="6" 
+                                                       Class="rz-w-100 rz-text-align-center" Style="height: 50px; font-size: 1.5rem; border-radius: 12px; border: 2px solid var(--rz-primary-lighter);" />
+                                    </RadzenStack>
+
+                                    <RadzenStack Gap="1rem">
+                                        <RadzenButton Text="@L["VerifyAndEnable"]" Icon="verified_user" ButtonStyle="ButtonStyle.Success" 
+                                                      Variant="Variant.Filled" Click="@VerifyAndEnableTwoFactor" Size="ButtonSize.Large" 
+                                                      Style="border-radius: 25px; font-weight: bold;" />
+                                        
+                                        <RadzenButton Text="@L["Cancel"]" ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" 
+                                                      Click="@CancelSetup" Style="font-weight: bold; color: var(--rz-text-secondary-color);" />
+                                    </RadzenStack>
+                                </RadzenStack>
+                            }
+                        }
+
+                        @if (recoveryCodes != null && recoveryCodes.Any())
+                        {
+                            <RadzenStack Gap="1rem" Class="rz-mt-6 rz-pt-6" Style="border-top: 1px solid var(--rz-border-color);">
+                                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
+                                    <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem">
+                                        <RadzenIcon Icon="save" />
+                                        <RadzenStack Gap="0">
+                                            <RadzenText TextStyle="TextStyle.Subtitle1" Class="rz-m-0" Style="font-weight: bold;">@L["RecoveryCodes"]</RadzenText>
+                                            <RadzenText TextStyle="TextStyle.Caption" Class="rz-m-0">@L["RecoveryCodesDescription"]</RadzenText>
+                                        </RadzenStack>
+                                    </RadzenStack>
+                                </RadzenAlert>
+
+                                <RadzenRow Gap="0.5rem">
+                                    @foreach (var recoveryCode in recoveryCodes)
+                                    {
+                                        <RadzenColumn Size="6" SizeSM="4" SizeMD="3">
+                                            <RadzenCard Variant="Variant.Outlined" Class="rz-p-2 rz-text-align-center" Style="font-family: monospace; font-size: 0.85rem; background: var(--rz-base-background-color);">
+                                                @recoveryCode
+                                            </RadzenCard>
+                                        </RadzenColumn>
+                                    }
+                                </RadzenRow>
+                            </RadzenStack>
+                        }
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" Class="rz-mt-4 animate-shake">
+                                @errorMessage
+                            </RadzenAlert>
+                        }
+                        @if (!string.IsNullOrEmpty(successMessage))
+                        {
+                            <RadzenAlert AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter" Class="rz-mt-4 animate-fade-in">
+                                @successMessage
+                            </RadzenAlert>
+                        }
+                    </RadzenStack>
+                </RadzenCard>
+            }
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenStack>
+
+<style>
+    .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+    .animate-shake { animation: shake 0.5s ease-in-out; }
+    
+    @@keyframes fadeIn { 
+        from { opacity: 0; transform: translateY(10px); } 
+        to { opacity: 1; transform: translateY(0); } 
+    }
+    
+    @@keyframes shake { 
+        0%, 100% { transform: translateX(0); } 
+        25% { transform: translateX(-8px); } 
+        75% { transform: translateX(8px); } 
+    }
+    
+</style>
+
+
+@code {
+    private bool isLoading = true;
+    private bool isTwoFactorEnabled = false;
+    private string qrCodeUri = string.Empty;
+    private string sharedKey = string.Empty;
+    private string verificationCode = string.Empty;
+    private IEnumerable<string>? recoveryCodes;
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTwoFactorStatus();
+        isLoading = false;
+    }
+
+    private async Task LoadTwoFactorStatus()
+    {
+        try
+        {
+            var status = await TwoFactorAppService.GetStatusAsync();
+            isTwoFactorEnabled = status.IsEnabled;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = L["ErrorLoadingData"];
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private async Task EnableTwoFactor()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = string.Empty;
+            var setup = await TwoFactorAppService.SetupAsync();
+            sharedKey = setup.SharedKey;
+            qrCodeUri = setup.QrCodeUri;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task VerifyAndEnableTwoFactor()
+    {
+        try
+        {
+            errorMessage = string.Empty;
+            successMessage = string.Empty;
+            
+            if (string.IsNullOrWhiteSpace(verificationCode))
+            {
+                errorMessage = L["VerificationCodeRequired"];
+                return;
+            }
+
+            var result = await TwoFactorAppService.VerifyAndEnableAsync(new VerifyTwoFactorDto { Code = verificationCode });
+            recoveryCodes = result.RecoveryCodes;
+            
+            isTwoFactorEnabled = true;
+            qrCodeUri = string.Empty;
+            verificationCode = string.Empty;
+            
+            successMessage = L["TwoFactorEnabledSuccessfully"];
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task DisableTwoFactor()
+    {
+        try
+        {
+            errorMessage = string.Empty;
+            successMessage = string.Empty;
+            
+            await TwoFactorAppService.DisableAsync();
+            isTwoFactorEnabled = false;
+            recoveryCodes = null;
+            
+            successMessage = L["TwoFactorDisabledSuccessfully"];
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private void CancelSetup()
+    {
+        qrCodeUri = string.Empty;
+        sharedKey = string.Empty;
+        verificationCode = string.Empty;
+        errorMessage = string.Empty;
+    }
+}

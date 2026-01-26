@@ -21,6 +21,10 @@ public class MainPlatformMenuContributor : IMenuContributor
         {
             await ConfigureMainMenuAsync(context);
         }
+        else if (context.Menu.Name == StandardMenus.User)
+        {
+            await ConfigureUserMenuAsync(context);
+        }
     }
 
     private Task ConfigureMainMenuAsync(MenuConfigurationContext context)
@@ -108,6 +112,22 @@ public class MainPlatformMenuContributor : IMenuContributor
 
         //Administration->Settings
         administration.SetSubItemOrder(SettingManagementMenus.GroupName, 8);
+
+        return Task.CompletedTask;
+    }
+
+    private Task ConfigureUserMenuAsync(MenuConfigurationContext context)
+    {
+        var l = context.GetLocalizer<MainPlatformResource>();
+
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                "Account.Manage.TwoFactorAuthentication",
+                l["TwoFactorAuthentication"],
+                url: "/Account/TwoFactorAuthentication",
+                icon: "fa fa-shield",
+                order: 1000,
+                requiredPermissionName: null));
 
         return Task.CompletedTask;
     }

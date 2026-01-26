@@ -1,0 +1,290 @@
+@page "/Account/VerifySecurityCode"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.Account.Localization
+@model MainPlatform.Blazor.Pages.Account.VerifySecurityCodeModel
+@inject IHtmlLocalizer<AccountResource> L
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@L["VerifySecurityCode"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rz-primary: #4f46e5;
+            --rz-primary-lighter: #818cf8;
+            --rz-primary-darker: #4338ca;
+            --rz-base-background-color: #f8fafc;
+            --rz-text-color: #1e293b;
+            --rz-text-secondary-color: #64748b;
+            --rz-border-color: #e2e8f0;
+            --rz-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --rz-border-radius: 12px;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--rz-base-background-color);
+            background-image: radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.05) 0px, transparent 50%), 
+                              radial-gradient(at 100% 0%, rgba(129, 140, 248, 0.05) 0px, transparent 50%);
+            color: var(--rz-text-color);
+        }
+
+        .auth-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: var(--rz-shadow);
+            width: 100%;
+            max-width: 440px;
+            border: 1px solid var(--rz-border-color);
+            text-align: center;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .auth-logo {
+            font-size: 2.5rem;
+            color: var(--rz-primary);
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+
+        h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--rz-text-color);
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--rz-text-secondary-color);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--rz-text-color);
+            font-size: 0.9rem;
+        }
+
+        /* Six-digit code container */
+        .code-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            direction: ltr; /* Always LTR for digits */
+        }
+
+        .code-box {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            text-align: center;
+            border: 2px solid var(--rz-border-color);
+            border-radius: 8px;
+            transition: all 0.2s;
+            background: #fff;
+            color: var(--rz-text-color);
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .code-box:focus {
+            border-color: var(--rz-primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--rz-primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            background: var(--rz-primary-darker);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-top: 1.25rem;
+            font-size: 0.9rem;
+            color: var(--rz-text-secondary-color);
+        }
+
+        .checkbox-group input {
+            margin-right: 0.75rem;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--rz-primary);
+        }
+
+        .alert-danger {
+            color: #991b1b;
+            background: #fef2f2;
+            padding: 1rem;
+            border-radius: var(--rz-border-radius);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            text-align: left;
+            border-left: 4px solid #ef4444;
+        }
+
+        @@keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <div class="auth-logo">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        </div>
+
+        <h2>@L["VerifySecurityCode"]</h2>
+        <p class="subtitle">@L["VerifySecurityCodeHeader"] (@Model.Provider)</p>
+
+        @if (!ModelState.IsValid)
+        {
+             <div class="alert-danger">
+                @foreach (var entry in ModelState)
+                {
+                    @foreach (var error in entry.Value.Errors)
+                    {
+                        <div>• @(string.IsNullOrEmpty(entry.Key) ? "" : entry.Key + ": ") @error.ErrorMessage</div>
+                    }
+                }
+            </div>
+        }
+
+        <form method="post" id="verifyForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+            <input type="hidden" name="ReturnUrlHash" value="@Model.ReturnUrlHash" />
+            <input type="hidden" name="RememberMe" value="@Model.RememberMe" />
+            <input type="hidden" name="Provider" value="@Model.Provider" />
+            <input type="hidden" id="Code" name="Code" required />
+
+            <div class="form-group">
+                <label for="code-box-1" style="text-align:center;">@L["SecurityCode"]</label>
+                <div class="code-container">
+                    <input type="text" class="code-box" maxlength="1" id="code-box-1" />
+                    <input type="text" class="code-box" maxlength="1" />
+                    <input type="text" class="code-box" maxlength="1" />
+                    <input type="text" class="code-box" maxlength="1" />
+                    <input type="text" class="code-box" maxlength="1" />
+                    <input type="text" class="code-box" maxlength="1" />
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="RememberBrowser" name="RememberBrowser" value="true" />
+                <label for="RememberBrowser">@L["RememberBrowser"]</label>
+            </div>
+
+            <button type="submit" class="btn-primary">@L["Verify"]</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('.code-box');
+            const hiddenInput = document.getElementById('Code');
+
+            // Focus first input on load
+            if (inputs.length > 0) {
+                inputs[0].focus();
+            }
+
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    // Check if multiple characters were pasted
+                    if (e.target.value.length > 1) {
+                         // This case is usually handled by the paste event, 
+                         // but just in case, trigger hidden input update
+                    } else if (e.target.value.length === 1) {
+                        if (index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        }
+                    }
+                    updateHiddenInput();
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    // Backspace navigation
+                    if (e.key === 'Backspace' && e.target.value.length === 0) {
+                        if (index > 0) {
+                            inputs[index - 1].focus();
+                        }
+                    } else if (e.key === 'ArrowLeft') {
+                         if (index > 0) inputs[index - 1].focus();
+                    } else if (e.key === 'ArrowRight') {
+                         if (index < inputs.length - 1) inputs[index + 1].focus();
+                    }
+                });
+
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+                    if (pasteData) {
+                        pasteData.split('').forEach((char, i) => {
+                            if (inputs[i]) {
+                                inputs[i].value = char;
+                            }
+                        });
+                        updateHiddenInput();
+                        // Focus the next empty box or the last box
+                        const nextIndex = Math.min(pasteData.length, inputs.length - 1);
+                        inputs[nextIndex].focus();
+                    }
+                });
+                
+                // Select text on focus for easier replacement
+                input.addEventListener('focus', (e) => {
+                    e.target.select();
+                });
+            });
+
+            function updateHiddenInput() {
+                hiddenInput.value = Array.from(inputs).map(i => i.value).join('');
+            }
+            
+            // Populate boxes if there was a previous value (e.g. after validation error error)
+            // But usually this value is empty on error to force re-entry
+        });
+    </script>
+</body>
+</html>

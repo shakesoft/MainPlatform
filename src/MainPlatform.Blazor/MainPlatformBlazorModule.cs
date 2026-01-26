@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity;
 using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Server.AspNetCore;
 using MainPlatform.Blazor.Menus;
@@ -165,6 +166,16 @@ namespace MainPlatform.Blazor;
         // Add services to the container.
         context.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
+
+        Configure<IdentityOptions>(options =>
+        {
+            // User settings
+            options.User.RequireUniqueEmail = true;
+            
+            // Enable Two-Factor Authentication
+            options.SignIn.RequireConfirmedEmail = false; 
+            options.Tokens.AuthenticatorTokenProvider = Microsoft.AspNetCore.Identity.TokenOptions.DefaultAuthenticatorProvider;
+        });
 
         if (!configuration.GetValue<bool>("App:DisablePII"))
         {

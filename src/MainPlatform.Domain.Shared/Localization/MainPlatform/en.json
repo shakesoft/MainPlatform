@@ -37,6 +37,26 @@
     "Unspecified": "System",
     "SeeAllUsers": "See all Users",
     "TakePhoto": "Take photo",
-    "ChoosePhoto": "Choose pshoto"
+    "ChoosePhoto": "Choose pshoto",
+    "TwoFactorAuthentication": "Two Factor Authentication",
+    "Loading": "Loading...",
+    "TwoFactorEnabled": "Two-factor authentication is enabled",
+    "TwoFactorEnabledDescription": "Your account is protected with two-factor authentication.",
+    "DisableTwoFactor": "Disable Two-Factor",
+    "TwoFactorDisabled": "Two-factor authentication is disabled",
+    "TwoFactorDisabledDescription": "Enable two-factor authentication to increase the security of your account.",
+    "EnableTwoFactor": "Enable Two-Factor",
+    "ScanQRCode": "Scan QR Code",
+    "ScanQRCodeDescription": "Scan the QR code below with your authenticator app (e.g., Google Authenticator, Microsoft Authenticator).",
+    "ManualEntry": "Manual Entry Key",
+    "VerificationCode": "Verification Code",
+    "VerificationCodeRequired": "Please enter the verification code.",
+    "VerifyAndEnable": "Verify and Enable",
+    "Cancel": "Cancel",
+    "RecoveryCodes": "Recovery Codes",
+    "RecoveryCodesDescription": "Save these codes in a safe place. You can use them to log in if you lose access to your authenticator app.",
+    "TwoFactorEnabledSuccessfully": "Two-factor authentication has been enabled successfully.",
+    "TwoFactorDisabledSuccessfully": "Two-factor authentication has been disabled successfully.",
+    "ErrorLoadingData": "Error loading data."
   }
 }
