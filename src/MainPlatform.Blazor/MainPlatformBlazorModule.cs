@@ -71,6 +71,7 @@ using Volo.Saas.Host;
 using Volo.Saas.Host.Blazor;
 using Volo.Saas.Host.Blazor.Server;
 using Volo.Saas.Host.Blazor.Server;
+using Radzen;
 
 namespace MainPlatform.Blazor;
 
@@ -190,8 +191,7 @@ public class MainPlatformBlazorModule : AbpModule
         ConfigureCookieConsent(context);
         ConfigureTheme();
         context.Services.AddMapperlyObjectMapper<MainPlatformBlazorModule>();
-       //
-       //context.Services.AddRadzenComponents();
+        context.Services.AddRadzenComponents();
     }
 
     private void ConfigureCookieConsent(ServiceConfigurationContext context)
