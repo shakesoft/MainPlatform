@@ -2,39 +2,211 @@
 @using Microsoft.Extensions.Localization
 @using global::OPAC.Localization
 @inject IStringLocalizer<OPACResource> L
-@{
-}
 
-<h1>OPAC</h1>
-<p>@L["SamplePageMessage"]</p>
+<RadzenStack Gap="1.5rem" class="rz-p-6">
+    <RadzenText TextStyle="TextStyle.H4" TagName="TagName.H1" class="rz-color-primary">@L["OPAC"] - Hierarchical Data View</RadzenText>
 
-<div class="rz-p-0 rz-p-md-12">
-    <RadzenChart> 
-        <RadzenColumnSeries Data="@revenue1" CategoryProperty="Quarter" ValueProperty="Revenue" />
-        <RadzenColumnSeries Data="@revenue2" CategoryProperty="Quarter" ValueProperty="Revenue" />
-    </RadzenChart>
-</div>
+    <RadzenCard Variant="Variant.Outlined" class="rz-shadow-0 rz-border-radius-2">
+        <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1.5rem" Wrap="Radzen.FlexWrap.Wrap">
+            <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem">
+                <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-m-0">Expand Mode:</RadzenText>
+                <RadzenSelectBar @bind-Value="@expandMode" TextProperty="Text" ValueProperty="Value"
+                                 Data="@(Enum.GetValues(typeof(DataGridExpandMode)).Cast<DataGridExpandMode>().Select(t => new { Text = t.ToString(), Value = t }))"
+                                 Size="ButtonSize.Small" />
+            </RadzenStack>
+
+            <RadzenStack Orientation="Radzen.Orientation.Horizontal" Gap="0.5rem">
+                <RadzenButton Text="Expand all rows" Icon="unfold_more" Click="@(args => ToggleRowsExpand(true))"
+                              ButtonStyle="ButtonStyle.Primary" Variant="Variant.Flat"
+                              Disabled=@(allRowsExpanded == true || expandMode == DataGridExpandMode.Single) />
+                <RadzenButton Text="Collapse all rows" Icon="unfold_less" Click="@(args => ToggleRowsExpand(false))"
+                              ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat"
+                              Disabled=@(allRowsExpanded == false || expandMode == DataGridExpandMode.Single) />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenCard>
+
+    <RadzenDataGrid @ref="grid" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true"
+                    RowRender="@RowRender" ExpandMode="@expandMode" Data="@customers" TItem="Customer"
+                    Render="OnCustomersDataGridRender" Responsive="true" class="rz-shadow-2 rz-border-radius-2">
+        <Template Context="customer">
+            <RadzenTabs RenderMode="TabRenderMode.Client" class="rz-m-2">
+                <Tabs>
+                    <RadzenTabsItem Text="Customer Orders" Icon="shopping_cart">
+                        <RadzenDataGrid AllowFiltering="true" AllowPaging="true" PageSize="3" AllowSorting="true"
+                                        Data="@customer.Orders" TItem="Order" Render="@OnOrdersDataGridRender">
+                            <Template Context="order">
+                                <RadzenCard Variant="Variant.Filled" class="rz-background-color-primary-lighter rz-color-on-primary-lighter rz-m-4 rz-shadow-0">
+                                    <RadzenStack Orientation="Radzen.Orientation.Horizontal" Gap="0.5rem">
+                                        <RadzenIcon Icon="business" />
+                                        <RadzenText TextStyle="TextStyle.Subtitle1">Company: <b>@customer.CompanyName</b></RadzenText>
+                                    </RadzenStack>
+                                </RadzenCard>
+                                <RadzenTabs>
+                                    <Tabs>
+                                        <RadzenTabsItem Text="Order Details" Icon="list_alt">
+                                            <RadzenDataGrid AllowFiltering="true" AllowPaging="true" PageSize="3" AllowSorting="true"
+                                                            Data="@order.OrderDetails" TItem="OrderDetail">
+                                                <Columns>
+                                                    <RadzenDataGridColumn TItem="OrderDetail" Property="ProductName" Title="Product" />
+                                                    <RadzenDataGridColumn TItem="OrderDetail" Property="UnitPrice" Title="Unit Price">
+                                                        <Template Context="detail">
+                                                            @String.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", detail.UnitPrice)
+                                                        </Template>
+                                                    </RadzenDataGridColumn>
+                                                    <RadzenDataGridColumn TItem="OrderDetail" Property="Quantity" Title="Quantity" />
+                                                    <RadzenDataGridColumn TItem="OrderDetail" Property="Discount" Title="Discount">
+                                                        <Template Context="detail">
+                                                            @String.Format("{0}%", detail.Discount*100)
+                                                        </Template>
+                                                    </RadzenDataGridColumn>
+                                                </Columns>
+                                            </RadzenDataGrid>
+                                        </RadzenTabsItem>
+                                    </Tabs>
+                                </RadzenTabs>
+                            </Template>
+                            <Columns>
+                                <RadzenDataGridColumn TItem="Order" Property="OrderID" Title="Order ID" Width="120px" />
+                                <RadzenDataGridColumn TItem="Order" Property="EmployeeName" Title="Employee" Width="200px">
+                                    <Template Context="order">
+                                        <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem">
+                                            <RadzenIcon Icon="account_circle" />
+                                            <RadzenText Style="margin-bottom:0">@order.EmployeeName</RadzenText>
+                                        </RadzenStack>
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="Order" Property="OrderDate" Title="Order Date" FormatString="{0:d}" Width="140px" />
+                                <RadzenDataGridColumn TItem="Order" Property="ShipName" Title="Ship Name" />
+                                <RadzenDataGridColumn TItem="Order" Property="ShipCountry" Title="Ship Country" />
+                            </Columns>
+                        </RadzenDataGrid>
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="Customer Location" Icon="location_on">
+                        <RadzenCard class="rz-m-2">
+                            <RadzenText TextStyle="TextStyle.H6">@customer.City, @customer.Country</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1">@customer.ContactTitle: @customer.ContactName</RadzenText>
+                        </RadzenCard>
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
+        </Template>
+        <Columns>
+            <RadzenDataGridColumn TItem="Customer" Property="CustomerID" Title="ID" Width="100px" />
+            <RadzenDataGridColumn TItem="Customer" Property="CompanyName" Title="Company Name" Width="250px" />
+            <RadzenDataGridColumn TItem="Customer" Property="ContactName" Title="Contact" Width="200px" />
+            <RadzenDataGridColumn TItem="Customer" Property="City" Title="City" Width="150px" />
+            <RadzenDataGridColumn TItem="Customer" Property="Country" Title="Country" Width="150px" />
+        </Columns>
+    </RadzenDataGrid>
+</RadzenStack>
 
 @code {
-    class DataItem
+    DataGridExpandMode expandMode = DataGridExpandMode.Single;
+    bool? allRowsExpanded;
+    RadzenDataGrid<Customer> grid;
+    List<Customer> customers;
+
+    async Task ToggleRowsExpand(bool? value)
     {
-        public string Quarter { get; set; }
-        public double Revenue { get; set; }
+        allRowsExpanded=value;
+
+        if(value==true)
+        {
+            await grid.ExpandRows(grid.PagedView);
+        }
+        else if(value==false)
+        {
+            await grid.CollapseRows(grid.PagedView);
+        }
     }
 
-    DataItem[] revenue1 = new DataItem[]
+    protected override void OnInitialized( )
     {
-      new DataItem { Quarter = "Q1", Revenue = 234000 },
-      new DataItem { Quarter = "Q2", Revenue = 284000 },
-      new DataItem { Quarter = "Q3", Revenue = 274000 },
-      new DataItem { Quarter = "Q4", Revenue = 294000 }
-    };
+        // Generating Mock Data for Demonstration
+        customers=new List<Customer>();
+        for(int i = 1 ; i<=10 ; i++)
+        {
+            var customer = new Customer
+            {
+                CustomerID=$"CUST0{i}",
+                CompanyName=$"Enterprise Corp {i}",
+                ContactName=$"John Doe {i}",
+                ContactTitle="Procurement Manager",
+                City=i%2==0 ? "London" : "Berlin",
+                Country=i%2==0 ? "UK" : "Germany",
+                Orders=new List<Order>()
+            };
 
-    DataItem[] revenue2 = new DataItem[]
+            for(int j = 1 ; j<=2 ; j++)
+            {
+                var order = new Order
+                {
+                    OrderID=1000+(i*10)+j,
+                    EmployeeName=$"Employee {j}",
+                    OrderDate=DateTime.Now.AddDays(-i-j),
+                    ShipName=customer.CompanyName,
+                    ShipCountry=customer.Country,
+                    OrderDetails=new List<OrderDetail>()
+                };
+
+                order.OrderDetails.Add(new OrderDetail { ProductName="Laptops", UnitPrice=1200, Quantity=5, Discount=0.1 });
+                order.OrderDetails.Add(new OrderDetail { ProductName="Monitors", UnitPrice=300, Quantity=10, Discount=0.05 });
+
+                customer.Orders.Add(order);
+            }
+            customers.Add(customer);
+        }
+    }
+
+    void RowRender(RowRenderEventArgs<Customer> args)
     {
-      new DataItem { Quarter = "Q1", Revenue = 324000 },
-      new DataItem { Quarter = "Q2", Revenue = 224000 },
-      new DataItem { Quarter = "Q3", Revenue = 444000 },
-      new DataItem { Quarter = "Q4", Revenue = 564000 }
-    };
+        args.Expandable=args.Data.Orders!=null&&args.Data.Orders.Any();
+    }
+
+    void OnCustomersDataGridRender(DataGridRenderEventArgs<Customer> args)
+    {
+        if(args.FirstRender)
+        {
+            InvokeAsync(( ) => args.Grid.ExpandRow(args.Grid.View.Where(c => c.Orders!=null&&c.Orders.Any()).FirstOrDefault()));
+        }
+    }
+
+    void OnOrdersDataGridRender(DataGridRenderEventArgs<Order> args)
+    {
+        if(args.FirstRender)
+        {
+            InvokeAsync(( ) => args.Grid.ExpandRow(args.Grid.View.Where(o => o.OrderDetails!=null&&o.OrderDetails.Any()).FirstOrDefault()));
+        }
+    }
+
+    // Mock Models
+    public class Customer
+    {
+        public string CustomerID { get; set; }
+        public string CompanyName { get; set; }
+        public string ContactName { get; set; }
+        public string ContactTitle { get; set; }
+        public string City { get; set; }
+        public string Country { get; set; }
+        public List<Order> Orders { get; set; }
+    }
+
+    public class Order
+    {
+        public int OrderID { get; set; }
+        public string EmployeeName { get; set; }
+        public DateTime OrderDate { get; set; }
+        public string ShipName { get; set; }
+        public string ShipCountry { get; set; }
+        public List<OrderDetail> OrderDetails { get; set; }
+    }
+
+    public class OrderDetail
+    {
+        public string ProductName { get; set; }
+        public double UnitPrice { get; set; }
+        public int Quantity { get; set; }
+        public double Discount { get; set; }
+    }
 }

@@ -1,0 +1,551 @@
+@page
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.Account.Localization
+@using Volo.Abp.Account.Settings
+@using Volo.Abp.Settings
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.AspNetCore.Mvc.UI.Alerts
+@using System.Linq
+@using Volo.Abp.Localization
+@model MainPlatform.Blazor.Pages.Account.CustomLoginModel
+@inject IHtmlLocalizer<AccountResource> L
+@inject ICurrentTenant CurrentTenant
+@inject ILanguageProvider LanguageProvider
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@L["Login"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rz-primary: #4f46e5;
+            --rz-primary-lighter: #818cf8;
+            --rz-primary-darker: #4338ca;
+            --rz-base-background-color: #f8fafc;
+            --rz-header-background-color: #ffffff;
+            --rz-text-color: #1e293b;
+            --rz-text-secondary-color: #64748b;
+            --rz-border-color: #e2e8f0;
+            --rz-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --rz-border-radius: 12px;
+        }
+
+        .language-switch-container {
+            position: absolute;
+            top: 1.5rem;
+            inset-inline-end: 1.5rem; /* RTL-friendly right/left */
+            z-index: 100;
+        }
+
+        .language-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            border: 1px solid var(--rz-border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            color: var(--rz-text-color);
+            box-shadow: var(--rz-shadow);
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .language-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            margin-top: 0.5rem;
+            inset-inline-end: 0;
+            background: white;
+            border: 1px solid var(--rz-border-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            min-width: 150px;
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .language-dropdown.show {
+            display: flex;
+        }
+
+        .language-item {
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: var(--rz-text-color);
+            text-align: start;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .language-item:hover {
+            background: var(--rz-base-background-color);
+            text-decoration: none;
+            color: var(--rz-primary);
+        }
+
+        .language-item.active {
+            font-weight: bold;
+            color: var(--rz-primary);
+            background: #f0fdf4;
+        }
+
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-toggle-icon {
+            position: absolute;
+            inset-inline-end: 1rem; /* RTL-friendly */
+            cursor: pointer;
+            color: var(--rz-text-secondary-color);
+            display: flex;
+            align-items: center;
+            padding: 0.25rem;
+            border-radius: 50%;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .password-toggle-icon:hover {
+            background-color: var(--rz-base-background-color);
+            color: var(--rz-primary);
+        }
+        
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--rz-base-background-color);
+            background-image: radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.05) 0px, transparent 50%), 
+                              radial-gradient(at 100% 0%, rgba(129, 140, 248, 0.05) 0px, transparent 50%);
+            color: var(--rz-text-color);
+            direction: @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "rtl" : "ltr");
+        }
+
+        .auth-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: var(--rz-shadow);
+            width: 100%;
+            max-width: 440px;
+            border: 1px solid var(--rz-border-color);
+            animation: slideUp 0.5s ease-out;
+            text-align: @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "right" : "left");
+        }
+
+        .auth-logo {
+            font-size: 2.5rem;
+            color: var(--rz-primary);
+            margin-bottom: 1.5rem;
+            display: block;
+            text-align: center;
+        }
+
+        h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--rz-text-color);
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--rz-text-secondary-color);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--rz-text-color);
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--rz-border-color);
+            border-radius: var(--rz-border-radius);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            background: #fff;
+            color: var(--rz-text-color);
+            text-align: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: var(--rz-primary-lighter);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: var(--rz-text-secondary-color);
+            user-select: none;
+        }
+
+        .checkbox-label input {
+            margin-@(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "left" : "right"): 0.75rem;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--rz-primary);
+        }
+
+        a {
+            color: var(--rz-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        a:hover {
+            color: var(--rz-primary-darker);
+            text-decoration: underline;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--rz-primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-primary:hover {
+            background: var(--rz-primary-darker);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            background: #f1f5f9;
+            color: #475569;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--rz-border-radius);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            text-align: inherit;
+            border-@(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "right" : "left"): 4px solid transparent;
+        }
+
+        .alert-danger {
+            color: #991b1b;
+            background: #fef2f2;
+            border-@(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "right" : "left")-color: #ef4444;
+        }
+
+        .tenant-selection {
+            background: #f1f5f9;
+            padding: 0.75rem 1rem;
+            border-radius: var(--rz-border-radius);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            border: 1px solid var(--rz-border-color);
+        }
+
+        .tenant-selection span.value {
+            font-weight: 700;
+            color: var(--rz-primary);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            width: 90%;
+            max-width: 440px;
+            animation: modalFadeIn 0.3s ease-out;
+            text-align: inherit;
+        }
+
+        .modal-content h3 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--rz-text-color);
+            text-align: center;
+        }
+
+        @@keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @@keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    @{
+        var languages = await LanguageProvider.GetLanguagesAsync();
+        var currentLanguage = System.Globalization.CultureInfo.CurrentCulture.Name;
+        var currentLanguageInfo = languages.FirstOrDefault(l => l.CultureName == currentLanguage);
+    }
+
+    <div class="language-switch-container">
+        <button class="language-btn" onclick="toggleLanguageDropdown(event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span>@(currentLanguageInfo?.DisplayName ?? currentLanguage)</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="language-dropdown" id="languageDropdown">
+            @foreach (var language in languages)
+            {
+                <a href="@Url.Page("/Account/Login", "SwitchLanguage", new { culture = language.CultureName, uiCulture = language.UiCultureName, returnUrl = Request.Path + Request.QueryString })" 
+                   class="language-item @(language.CultureName == currentLanguage ? "active" : "")">
+                   @language.DisplayName
+                </a>
+            }
+        </div>
+    </div>
+
+    <div class="auth-card">
+        @if (MainPlatform.MultiTenancy.MultiTenancyConsts.IsEnabled)
+        {
+            <div class="tenant-selection">
+                <div>
+                    @L["Tenant"]: <span class="value">@(CurrentTenant.Name ?? L["NotSelected"].Value)</span>
+                </div>
+                <a href="javascript:void(0)" onclick="showTenantSwitch()">@L["Change"]</a>
+            </div>
+        }
+
+        <div class="auth-logo">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        </div>
+        
+        <h2>@L["Login"]</h2>
+        <p class="subtitle">@L["LoginToYourAccount"]</p>
+
+        @if (Model.GetAlerts().Any())
+        {
+            @foreach (var alert in Model.GetAlerts())
+            {
+                <div class="alert-@(alert.Type.ToString().ToLower())" style="padding: 1rem; border-radius: 12px; margin-bottom: 1rem; text-align: left; font-size: 0.95rem; @(alert.Type == AlertType.Danger ? "color: #b91c1c; background: #fef2f2; border: 1px solid #fee2e2;" : "color: #1e40af; background: #eff6ff; border: 1px solid #dbeafe;")">
+                    • @alert.Text
+                </div>
+            }
+        }
+
+        @if (!ModelState.IsValid)
+        {
+             <div class="alert-danger">
+                @foreach (var entry in ModelState)
+                {
+                    @foreach (var error in entry.Value.Errors)
+                    {
+                        <div>• @error.ErrorMessage</div>
+                    }
+                }
+            </div>
+        }
+
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+            <input type="hidden" name="ReturnUrlHash" value="@Model.ReturnUrlHash" />
+
+            <div class="form-group">
+                <label for="LoginInput_UserNameOrEmailAddress">@L["UserNameOrEmailAddress"]</label>
+                <input type="text" id="LoginInput_UserNameOrEmailAddress" name="LoginInput.UserNameOrEmailAddress" value="@Model.LoginInput?.UserNameOrEmailAddress" required autofocus autocomplete="username" />
+            </div>
+
+            <div class="form-group">
+                <label for="LoginInput_Password">@L["Password"]</label>
+                <div class="password-wrapper">
+                    <input type="password" id="LoginInput_Password" name="LoginInput.Password" required autocomplete="current-password" />
+                    <div class="password-toggle-icon" onclick="togglePasswordVisibility()">
+                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <svg id="eyeOffIcon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07-2.3 2.3"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="LoginInput.RememberMe" value="true" @(Model.LoginInput?.RememberMe == true ? "checked" : "") />
+                    @L["RememberMe"]
+                </label>
+                <a href="@Url.Page("/Account/ForgotPassword")">@L["ForgotPassword"]</a>
+            </div>
+
+            <button type="submit" class="btn-primary">@L["Login"]</button>
+        </form>
+    </div>
+
+    <!-- Tenant Switch Modal -->
+    <div id="tenantModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>@L["Tenant"]</h3>
+            <form method="post" action="@Url.Page("/Account/Login", "SwitchTenant")" id="tenantForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+                <input type="hidden" name="ReturnUrlHash" value="@Model.ReturnUrlHash" />
+                
+                <div class="form-group">
+                    <label for="TenantName">@L["Tenant"]</label>
+                    <input type="text" id="TenantName" name="TenantName" placeholder="@L["EnterTenantName"]" class="tenant-input" />
+                    <small style="color: #6b7280; display: block; margin-top: 0.5rem;">@L["LeaveTenantNameEmptyForHost"]</small>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn-primary" style="flex: 1;">@L["Save"]</button>
+                    <button type="button" class="btn-secondary" onclick="hideTenantSwitch()" style="flex: 1;">@L["Cancel"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+    </style>
+
+    <script>
+        function showTenantSwitch() {
+            document.getElementById('tenantModal').style.display = 'flex';
+            document.getElementById('TenantName').focus();
+        }
+
+        function hideTenantSwitch() {
+            document.getElementById('tenantModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('tenantModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideTenantSwitch();
+            }
+        });
+
+        // Password Toggle
+        function togglePasswordVisibility() {
+            var passwordInput = document.getElementById("LoginInput_Password");
+            var eyeIcon = document.getElementById("eyeIcon");
+            var eyeOffIcon = document.getElementById("eyeOffIcon");
+            
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeIcon.style.display = "none";
+                eyeOffIcon.style.display = "block";
+            } else {
+                passwordInput.type = "password";
+                eyeIcon.style.display = "block";
+                eyeOffIcon.style.display = "none";
+            }
+        }
+
+        // Language Dropdown
+        function toggleLanguageDropdown(event) {
+            event.stopPropagation();
+            var dropdown = document.getElementById("languageDropdown");
+            dropdown.classList.toggle("show");
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.language-btn') && !event.target.closest('.language-btn')) {
+                var dropdowns = document.getElementsByClassName("language-dropdown");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

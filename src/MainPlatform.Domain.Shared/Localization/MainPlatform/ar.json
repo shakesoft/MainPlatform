@@ -37,6 +37,26 @@
     "Unspecified": "نظام",
     "SeeAllUsers": "رؤية كافة المستخدمين",
     "TakePhoto": "تصوير",
-    "ChoosePhoto": "اختر صورة"
+    "ChoosePhoto": "اختر صورة",
+    "TwoFactorAuthentication": "المصادقة الثنائية",
+    "Loading": "جار التحميل...",
+    "TwoFactorEnabled": "المصادقة الثنائية ممكّنة",
+    "TwoFactorEnabledDescription": "حسابك محمي بالمصادقة الثنائية.",
+    "DisableTwoFactor": "تعطيل المصادقة الثنائية",
+    "TwoFactorDisabled": "المصادقة الثنائية معطلة",
+    "TwoFactorDisabledDescription": "قم بتمكين المصادقة الثنائية لزيادة أمان حسابك.",
+    "EnableTwoFactor": "تمكين المصادقة الثنائية",
+    "ScanQRCode": "مسح رمز الاستجابة السريعة (QR)",
+    "ScanQRCodeDescription": "امسح رمز الاستجابة السريعة أدناه باستخدام تطبيق المصادقة الخاص بك (مثل Google Authenticator أو Microsoft Authenticator).",
+    "ManualEntry": "مفتاح الإدخال اليدوي",
+    "VerificationCode": "رمز التحقق",
+    "VerificationCodeRequired": "يرجى إدخال رمز التحقق.",
+    "VerifyAndEnable": "تحقق وتمكين",
+    "Cancel": "إلغاء",
+    "RecoveryCodes": "رموز الاسترداد",
+    "RecoveryCodesDescription": "احفظ هذه الرموز في مكان آمن. يمكنك استخدامها لتسجيل الدخول إذا فقدت الوصول إلى تطبيق المصادقة الخاص بك.",
+    "TwoFactorEnabledSuccessfully": "تم تمكين المصادقة الثنائية بنجاح.",
+    "TwoFactorDisabledSuccessfully": "تم تعطيل المصادقة الثنائية بنجاح.",
+    "ErrorLoadingData": "خطأ في تحميل البيانات."
   }
 }
