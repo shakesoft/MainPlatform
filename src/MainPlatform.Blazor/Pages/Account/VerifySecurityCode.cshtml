@@ -1,8 +1,8 @@
 @page "/Account/VerifySecurityCode"
 @using Microsoft.AspNetCore.Mvc.Localization
-@using Volo.Abp.Account.Localization
+@using MainPlatform.Localization
 @model MainPlatform.Blazor.Pages.Account.VerifySecurityCodeModel
-@inject IHtmlLocalizer<AccountResource> L
+@inject IHtmlLocalizer<MainPlatformResource> L
 
 @{
     Layout = null;
@@ -114,6 +114,43 @@
             box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
         }
 
+        .recovery-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--rz-border-color);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            text-align: center;
+            font-family: monospace;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            box-sizing: border-box;
+            background: #fff;
+            color: var(--rz-text-color);
+        }
+
+        .recovery-input:focus {
+            border-color: var(--rz-primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .switch-mode-link {
+            display: block;
+            margin-top: 1.5rem;
+            color: var(--rz-primary);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .switch-mode-link:hover {
+            color: var(--rz-primary-darker);
+            text-decoration: underline;
+        }
+
         .btn-primary {
             width: 100%;
             padding: 14px;
@@ -175,7 +212,11 @@
         </div>
 
         <h2>@L["VerifySecurityCode"]</h2>
-        <p class="subtitle">@L["VerifySecurityCodeHeader"] (@Model.Provider)</p>
+        <p class="subtitle">
+            @L["VerifySecurityCodeHeader"]
+            <br/>
+            <span style="font-weight: 600; color: var(--rz-primary);">(@Model.GetProviderDisplayName(Model.Provider ?? ""))</span>
+        </p>
 
         @if (!ModelState.IsValid)
         {
@@ -196,17 +237,44 @@
             <input type="hidden" name="ReturnUrlHash" value="@Model.ReturnUrlHash" />
             <input type="hidden" name="RememberMe" value="@Model.RememberMe" />
             <input type="hidden" name="Provider" value="@Model.Provider" />
+            <input type="hidden" id="UseRecoveryCode" name="UseRecoveryCode" value="@(Model.UseRecoveryCode ? "true" : "false")" />
             <input type="hidden" id="Code" name="Code" required />
 
             <div class="form-group">
-                <label for="code-box-1" style="text-align:center;">@L["SecurityCode"]</label>
-                <div class="code-container">
-                    <input type="text" class="code-box" maxlength="1" id="code-box-1" />
-                    <input type="text" class="code-box" maxlength="1" />
-                    <input type="text" class="code-box" maxlength="1" />
-                    <input type="text" class="code-box" maxlength="1" />
-                    <input type="text" class="code-box" maxlength="1" />
-                    <input type="text" class="code-box" maxlength="1" />
+                <div id="authenticator-view" style="display: @(Model.UseRecoveryCode ? "none" : "block")">
+                    <label for="code-box-1" style="text-align:center;">@L["SecurityCode"] (@Model.GetProviderDisplayName(Model.Provider ?? ""))</label>
+                    <div class="code-container">
+                        <input type="text" class="code-box" maxlength="1" id="code-box-1" />
+                        <input type="text" class="code-box" maxlength="1" />
+                        <input type="text" class="code-box" maxlength="1" />
+                        <input type="text" class="code-box" maxlength="1" />
+                        <input type="text" class="code-box" maxlength="1" />
+                        <input type="text" class="code-box" maxlength="1" />
+                    </div>
+                    
+                    @if (Model.AvailableProviders.Count > 1)
+                    {
+                        <div style="margin-top: 1rem;">
+                            <a href="javascript:void(0)" class="switch-mode-link" onclick="toggleProviderList()">@L["TryAnotherWay"]</a>
+                        </div>
+                        <div id="provider-list" style="display: none; margin-top: 1rem; border-top: 1px solid var(--rz-border-color); padding-top: 1rem;">
+                            @foreach (var p in Model.AvailableProviders.Where(x => x != Model.Provider))
+                            {
+                                <a href="@Url.Page("/Account/VerifySecurityCode", new { Provider = p, ReturnUrl = Model.ReturnUrl, ReturnUrlHash = Model.ReturnUrlHash, RememberMe = Model.RememberMe })" 
+                                   class="switch-mode-link" style="display: block; margin-bottom: 0.5rem; border: 1px solid var(--rz-border-color); padding: 0.5rem; border-radius: 8px;">
+                                   @Model.GetProviderDisplayName(p)
+                                </a>
+                            }
+                        </div>
+                    }
+
+                    <a href="javascript:void(0)" class="switch-mode-link" onclick="toggleMode(true)">@L["UseRecoveryCodeLink"]</a>
+                </div>
+
+                <div id="recovery-view" style="display: @(Model.UseRecoveryCode ? "flex" : "none"); flex-direction: column; align-items: center;">
+                    <label for="recovery-code-input">@L["RecoveryCode"]</label>
+                    <input type="text" id="recovery-code-input" class="recovery-input" placeholder="XXXXX-XXXXX" autocomplete="off" />
+                    <a href="javascript:void(0)" class="switch-mode-link" onclick="toggleMode(false)">@L["UseAuthenticatorCodeLink"]</a>
                 </div>
             </div>
 
@@ -279,7 +347,33 @@
             });
 
             function updateHiddenInput() {
-                hiddenInput.value = Array.from(inputs).map(i => i.value).join('');
+                if (document.getElementById('UseRecoveryCode').value === 'true') {
+                    hiddenInput.value = document.getElementById('recovery-code-input').value;
+                } else {
+                    hiddenInput.value = Array.from(inputs).map(i => i.value).join('');
+                }
+            }
+
+            // Recovery code input update
+            document.getElementById('recovery-code-input').addEventListener('input', updateHiddenInput);
+
+            // Handle toggle
+            window.toggleMode = function(useRecovery) {
+                document.getElementById('UseRecoveryCode').value = useRecovery ? "true" : "false";
+                document.getElementById('authenticator-view').style.display = useRecovery ? "none" : "block";
+                document.getElementById('recovery-view').style.display = useRecovery ? "flex" : "none";
+                
+                if (useRecovery) {
+                    document.getElementById('recovery-code-input').focus();
+                } else {
+                    document.getElementById('code-box-1').focus();
+                }
+                updateHiddenInput();
+            }
+
+            window.toggleProviderList = function() {
+                const list = document.getElementById('provider-list');
+                list.style.display = list.style.display === 'none' ? 'block' : 'none';
             }
             
             // Populate boxes if there was a previous value (e.g. after validation error error)

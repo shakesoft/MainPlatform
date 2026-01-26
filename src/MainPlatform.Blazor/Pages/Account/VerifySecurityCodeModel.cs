@@ -1,21 +1,33 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Volo.Abp.Account.Public.Web.Pages.Account;
-using Volo.Abp.Account.Web.Pages.Account;
 using Volo.Abp.Identity;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.Sms;
+using Microsoft.Extensions.Localization;
+using MainPlatform.Localization;
+using System.Collections.Generic;
 
 namespace MainPlatform.Blazor.Pages.Account
 {
     public class VerifySecurityCodeModel : AccountPageModel
     {
+        private readonly IdentityUserManager _userManager;
+        private readonly ISmsSender _smsSender;
+        private readonly IStringLocalizer<MainPlatformResource> _L;
+
         [BindProperty]
         [Required]
         public string Code { get; set; }
 
         [BindProperty]
         public bool RememberBrowser { get; set; }
+
+        [BindProperty]
+        public bool UseRecoveryCode { get; set; }
 
         [HiddenInput]
         [BindProperty(SupportsGet = true)]
@@ -33,12 +45,21 @@ namespace MainPlatform.Blazor.Pages.Account
         [BindProperty(SupportsGet = true)]
         public string? Provider { get; set; }
 
+        public List<string> AvailableProviders { get; set; } = new();
+
         protected new SignInManager<Volo.Abp.Identity.IdentityUser> SignInManager { get; }
 
-        public VerifySecurityCodeModel(SignInManager<Volo.Abp.Identity.IdentityUser> signInManager)
+        public VerifySecurityCodeModel(
+            SignInManager<Volo.Abp.Identity.IdentityUser> signInManager,
+            IdentityUserManager userManager,
+            ISmsSender smsSender,
+            IStringLocalizer<MainPlatformResource> L)
         {
             SignInManager = signInManager;
-            Code = string.Empty; // Initialize to avoid warning but [Required] will handle validation
+            _userManager = userManager;
+            _smsSender = smsSender;
+            _L = L;
+            Code = string.Empty;
         }
 
         public virtual async Task<IActionResult> OnGetAsync()
@@ -50,7 +71,34 @@ namespace MainPlatform.Blazor.Pages.Account
                 return RedirectToPage("/Account/Login", new { returnUrl = ReturnUrl });
             }
 
+            var providers = await _userManager.GetValidTwoFactorProvidersAsync(user);
+            AvailableProviders = providers.ToList();
+
+            if (string.IsNullOrEmpty(Provider))
+            {
+                // Prioritize Phone if available, otherwise pick the first one
+                Provider = AvailableProviders.Contains("Phone") ? "Phone" : AvailableProviders.FirstOrDefault();
+            }
+
+            if (Provider == "Phone")
+            {
+                // Send SMS token
+                var token = await _userManager.GenerateTwoFactorTokenAsync(user, "Phone");
+                await _smsSender.SendAsync(user.PhoneNumber!, _L["SmsTwoFactorMessage", token]);
+            }
+
             return Page();
+        }
+
+        public string GetProviderDisplayName(string provider)
+        {
+            return provider switch
+            {
+                "Authenticator" => _L["AuthenticatorApp"],
+                "Phone" => _L["SMSTextOrWhatsApp"],
+                "Email" => _L["Email"],
+                _ => provider
+            };
         }
 
         public virtual async Task<IActionResult> OnPostAsync()
@@ -66,11 +114,20 @@ namespace MainPlatform.Blazor.Pages.Account
                 return Page();
             }
 
-            var result = await SignInManager.TwoFactorSignInAsync(
-                Provider ?? string.Empty,
-                Code.Replace(" ", string.Empty).Replace("-", string.Empty),
-                RememberMe ?? false,
-                RememberBrowser);
+            Microsoft.AspNetCore.Identity.SignInResult result;
+
+            if (UseRecoveryCode)
+            {
+                result = await SignInManager.TwoFactorRecoveryCodeSignInAsync(Code.Trim());
+            }
+            else
+            {
+                result = await SignInManager.TwoFactorSignInAsync(
+                    Provider ?? string.Empty,
+                    Code.Replace(" ", string.Empty).Replace("-", string.Empty),
+                    RememberMe ?? false,
+                    RememberBrowser);
+            }
 
             if (result.Succeeded)
             {
@@ -88,7 +145,25 @@ namespace MainPlatform.Blazor.Pages.Account
                 return RedirectToPage("/Account/Login");
             }
 
-            ModelState.AddModelError(string.Empty, "Invalid code or session expired. Please check your authenticator app.");
+            string errorMessage;
+            if (UseRecoveryCode)
+            {
+                errorMessage = "Invalid recovery code. Please try again.";
+            }
+            else if (Provider == "Authenticator")
+            {
+                errorMessage = "Invalid code. Please check your authenticator app.";
+            }
+            else if (Provider == "Phone")
+            {
+                errorMessage = "Invalid SMS code. Please try again.";
+            }
+            else
+            {
+                errorMessage = "Invalid code or session expired.";
+            }
+
+            ModelState.AddModelError(string.Empty, errorMessage);
             return Page();
         }
     }

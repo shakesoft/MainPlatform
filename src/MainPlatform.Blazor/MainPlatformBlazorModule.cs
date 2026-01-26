@@ -174,7 +174,12 @@ namespace MainPlatform.Blazor;
             
             // Enable Two-Factor Authentication
             options.SignIn.RequireConfirmedEmail = false; 
-            options.Tokens.AuthenticatorTokenProvider = Microsoft.AspNetCore.Identity.TokenOptions.DefaultAuthenticatorProvider;
+            options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+            options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+            options.Tokens.ChangeEmailTokenProvider = TokenOptions.DefaultEmailProvider;
+            
+            // Use 6-digit codes for email 2FA
+            options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
         });
 
         if (!configuration.GetValue<bool>("App:DisablePII"))

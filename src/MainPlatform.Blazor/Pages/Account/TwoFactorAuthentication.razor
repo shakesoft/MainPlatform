@@ -6,34 +6,57 @@
 @using Radzen.Blazor
 @inject ITwoFactorAppService TwoFactorAppService
 @inject IStringLocalizer<MainPlatformResource> L
+@inject NotificationService NotificationService
 @attribute [Authorize]
 
-<RadzenStack Gap="2rem" Class="rz-p-4 rz-p-md-12">
-    <RadzenRow JustifyContent="Radzen.JustifyContent.Center">
-        <RadzenColumn Size="12" SizeMD="8" SizeLG="6">
-            <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Class="rz-mb-4">
-                <RadzenIcon Icon="security" Style="font-size: 2rem; color: var(--rz-primary);" />
-                <RadzenText TextStyle="TextStyle.H4" TagName="TagName.H1" Class="rz-m-0 rz-color-primary" Style="font-weight: bold;">
-                    @L["TwoFactorAuthentication"]
-                </RadzenText>
-            </RadzenStack>
+<div class="auth-container" dir="@(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "rtl" : "ltr")">
+    <RadzenStack Gap="2rem" Class="rz-p-4 rz-p-md-12">
+        <RadzenRow JustifyContent="Radzen.JustifyContent.Center">
+            <RadzenColumn Size="12" SizeMD="8" SizeLG="6">
+                
+                @if (isLoading)
+                {
+                    <RadzenCard Variant="Variant.Filled" Class="rz-text-align-center rz-p-12">
+                        <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Medium" />
+                    </RadzenCard>
+                }
+                else if (recoveryCodes != null && recoveryCodes.Any())
+                {
+                    <RadzenCard Variant="Variant.Filled" Class="auth-card recovery-card">
+                         <div class="recovery-alert-box">
+                             <div class="alert-side-icon">
+                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                             </div>
+                             <div class="alert-main-content">
+                                 <h3 class="recovery-title">@L["RecoveryCodes"]</h3>
+                                 <div class="recovery-desc-flex">
+                                     <svg class="floppy-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                                     <p>@L["RecoveryCodesDescription"]</p>
+                                 </div>
+                             </div>
+                         </div>
 
-            @if (isLoading)
-            {
-                <RadzenCard Variant="Variant.Filled" Class="rz-text-align-center rz-p-12">
-                    <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Medium" />
-                    <RadzenText TextStyle="TextStyle.Body1" Class="rz-mt-4 rz-color-text-secondary">@L["Loading"]</RadzenText>
-                </RadzenCard>
-            }
-            else
-            {
-                <RadzenCard Variant="Variant.Filled" Class="rz-shadow-10 rz-border-radius-2 rz-p-6 rz-p-md-10">
-                    <RadzenStack Gap="1.5rem">
-                        @if (isTwoFactorEnabled)
-                        {
-                            <RadzenAlert AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false" Size="AlertSize.Large">
+                         <div class="recovery-codes-grid">
+                             @foreach (var recoveryCode in recoveryCodes)
+                             {
+                                 <div class="recovery-item-box">@recoveryCode</div>
+                             }
+                         </div>
+
+                         <div class="recovery-footer">
+                             <button class="btn-close-recovery" @onclick="() => recoveryCodes = null">@L["Close"]</button>
+                         </div>
+                    </RadzenCard>
+                }
+                else if (isTwoFactorEnabled && currentStep == TwoFactorStep.None)
+                {
+                    <RadzenCard Variant="Variant.Filled" Class="rz-shadow-10 rz-border-radius-2 rz-p-6 rz-p-md-10">
+                         <RadzenStack Gap="1.5rem">
+                             <RadzenAlert AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false" Size="AlertSize.Large">
                                 <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
-                                    <RadzenIcon Icon="check_circle" Style="font-size: 2.5rem;" />
+                                    <div class="success-icon">
+                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                    </div>
                                     <RadzenStack Gap="0">
                                         <RadzenText TextStyle="TextStyle.H6" Class="rz-m-0" Style="font-weight: bold;">@L["TwoFactorEnabled"]</RadzenText>
                                         <RadzenText TextStyle="TextStyle.Body2" Class="rz-m-0">@L["TwoFactorEnabledDescription"]</RadzenText>
@@ -42,145 +65,618 @@
                             </RadzenAlert>
 
                             <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" Class="rz-mt-4">
-                                <RadzenButton Text="@L["DisableTwoFactor"]" Icon="power_settings_new" ButtonStyle="ButtonStyle.Danger" 
-                                              Variant="Variant.Outlined" Click="@DisableTwoFactor" Size="ButtonSize.Large" 
-                                              Style="border-radius: 25px; font-weight: bold; width: 100%; max-width: 300px;" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Outlined" Click="@DisableTwoFactor" Size="ButtonSize.Large" 
+                                              Style="border-radius: 25px; font-weight: bold; width: 100%; max-width: 300px;">
+                                    <ChildContent>
+                                        <div class="btn-content">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+                                            <span>@L["DisableTwoFactor"]</span>
+                                        </div>
+                                    </ChildContent>
+                                </RadzenButton>
+                            </RadzenStack>
+                         </RadzenStack>
+                    </RadzenCard>
+                }
+                else
+                {
+                    <RadzenCard Variant="Variant.Filled" Class="auth-card">
+                        @if (currentStep == TwoFactorStep.Selection)
+                        {
+                            <div class="header-section text-center">
+                                 <div class="shield-icon">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="#4F46E5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                 </div>
+                                 <h2 class="title">@L["ProtectYourAccount"]</h2>
+                                 <p class="description">
+                                     @L["TwoFactorDescription"]
+                                     <a href="#" class="link">@L["AboutTwoFactor"]</a>
+                                 </p>
+                            </div>
+
+                            <div class="selection-section">
+                                <h3 class="section-title">@L["ChooseIdentityVerification"]</h3>
+                                
+                                <div class="option-card @(selectedOption == TwoFactorOption.Authenticator ? "selected" : "")" @onclick="() => SelectOption(TwoFactorOption.Authenticator)">
+                                    <div class="option-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><line x1="7" y1="7" x2="7" y2="7"></line><line x1="17" y1="7" x2="17" y2="7"></line><line x1="17" y1="17" x2="17" y2="17"></line><line x1="7" y1="17" x2="7" y2="17"></line></svg>
+                                    </div>
+                                    <div class="option-content">
+                                        <div class="option-label">@L["AuthenticatorApp"]</div>
+                                        <div class="option-desc">@L["AuthenticatorAppDescription"]</div>
+                                    </div>
+                                    <div class="option-check">
+                                        <div class="custom-radio @(selectedOption == TwoFactorOption.Authenticator ? "checked" : "")"></div>
+                                    </div>
+                                </div>
+
+                                 <div class="option-card @(selectedOption == TwoFactorOption.SMS ? "selected" : "")" @onclick="() => SelectOption(TwoFactorOption.SMS)">
+                                    <div class="option-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                    </div>
+                                    <div class="option-content">
+                                        <div class="option-label">@L["SMSTextOrWhatsApp"]</div>
+                                        <div class="option-desc">@L["SMSTextDescription"]</div>
+                                    </div>
+                                    <div class="option-check">
+                                        <div class="custom-radio @(selectedOption == TwoFactorOption.SMS ? "checked" : "")"></div>
+                                    </div>
+                                </div>
+
+                                <div class="option-card @(selectedOption == TwoFactorOption.Email ? "selected" : "")" @onclick="() => SelectOption(TwoFactorOption.Email)">
+                                    <div class="option-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    </div>
+                                    <div class="option-content">
+                                        <div class="option-label">@L["Email"]</div>
+                                        <div class="option-desc">@L["EmailDescription"]</div>
+                                        <span class="badge-recommended">@L["Recommended"]</span>
+                                    </div>
+                                    <div class="option-check">
+                                        <div class="custom-radio @(selectedOption == TwoFactorOption.Email ? "checked" : "")"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="action-footer">
+                                <button class="btn-primary-auth" @onclick="ProceedToPassword">@L["Continue"]</button>
+                            </div>
+                        }
+                        else if (currentStep == TwoFactorStep.PasswordVerification)
+                        {
+                            <div class="header-section text-center">
+                                 <h2 class="title">@L["ConfirmPassword"]</h2>
+                                 <p class="description">@L["ConfirmPasswordDescription"]</p>
+                            </div>
+                            
+                            <div class="password-box">
+                                <div class="password-wrapper">
+                                    <input type="@(showPassword ? "text" : "password")" 
+                                           @bind="confirmPassword" 
+                                           @bind:event="oninput"
+                                           class="password-field" 
+                                           placeholder="@L["Password"]" 
+                                           @onkeydown="@(args => { if (args.Key == "Enter") VerifyPassword(); })" />
+                                    
+                                    <div class="visibility-toggle" @onclick="TogglePasswordVisibility">
+                                        @if(showPassword)
+                                        {
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07-2.3 2.3"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                        }
+                                        else
+                                        {
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        }
+                                    </div>
+                                </div>
+                                
+                                @if (!string.IsNullOrEmpty(errorMessage))
+                                {
+                                    <div class="error-text">@errorMessage</div>
+                                }
+                            </div>
+
+                            <div class="action-footer double-btn">
+                                <button class="btn-cancel-auth" @onclick="() => currentStep = TwoFactorStep.Selection">@L["Cancel"]</button>
+                                <button class="btn-primary-auth" @onclick="VerifyPassword">@L["Confirm"]</button>
+                            </div>
+                        }
+                        else if (currentStep == TwoFactorStep.SetupAuthenticator)
+                        {
+                            <RadzenStack Gap="2rem" Class="rz-mt-4 animate-fade-in">
+                                <RadzenStack AlignItems="AlignItems.Center" Gap="1rem">
+                                    <RadzenText TextStyle="TextStyle.H6" Style="font-weight: bold;" Class="text-center">@L["ScanQRCode"]</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body2" Class="text-center rz-px-6">@L["ScanQRCodeDescription"]</RadzenText>
+                                    
+                                    <RadzenCard Variant="Variant.Outlined" Class="qr-frame">
+                                        @if(!string.IsNullOrEmpty(qrCodeUri))
+                                        {
+                                            <img src="@qrCodeUri" alt="QR Code" class="qr-img" />
+                                        }
+                                    </RadzenCard>
+                                </RadzenStack>
+
+                                <RadzenStack Gap="0.5rem" Class="rz-mb-2">
+                                    <RadzenText TextStyle="TextStyle.Overline" Style="font-weight: bold; color: var(--rz-text-secondary-color);" Class="text-center rz-m-0">
+                                        @L["ManualEntry"]
+                                    </RadzenText>
+                                    <div class="manual-key-box">
+                                        @sharedKey
+                                    </div>
+                                </RadzenStack>
+
+                                <RadzenStack Gap="0.5rem">
+                                    <RadzenText TextStyle="TextStyle.Caption" Style="font-weight: bold; text-transform: uppercase;">@L["VerificationCode"]</RadzenText>
+                                    <RadzenTextBox @bind-Value="verificationCode" Placeholder="000000" MaxLength="6" 
+                                                   Class="code-input" />
+                                </RadzenStack>
+
+                                <RadzenStack Gap="1rem">
+                                    <RadzenButton ButtonStyle="ButtonStyle.Success" Variant="Variant.Filled" Click="@VerifyAndEnableTwoFactor" Size="ButtonSize.Large" Class="btn-rounded-full">
+                                        <ChildContent>
+                                            <div class="btn-content">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                                <span>@L["VerifyAndEnable"]</span>
+                                            </div>
+                                        </ChildContent>
+                                    </RadzenButton>
+                                    
+                                    <RadzenButton Text="@L["Cancel"]" ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" 
+                                                  Click="@CancelSetup" Style="font-weight: bold; color: var(--rz-text-secondary-color);" />
+                                </RadzenStack>
+                                
+                                @if (!string.IsNullOrEmpty(errorMessage))
+                                {
+                                    <RadzenAlert AlertStyle="AlertStyle.Danger">@errorMessage</RadzenAlert>
+                                }
                             </RadzenStack>
                         }
-                        else
+                        else if (currentStep == TwoFactorStep.SetupSMS)
                         {
-                            <RadzenAlert AlertStyle="AlertStyle.Warning" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false" Size="AlertSize.Large">
-                                <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
-                                    <RadzenIcon Icon="warning" Style="font-size: 2.5rem;" />
-                                    <RadzenStack Gap="0">
-                                        <RadzenText TextStyle="TextStyle.H6" Class="rz-m-0" Style="font-weight: bold;">@L["TwoFactorDisabled"]</RadzenText>
-                                        <RadzenText TextStyle="TextStyle.Body2" Class="rz-m-0">@L["TwoFactorDisabledDescription"]</RadzenText>
-                                    </RadzenStack>
-                                </RadzenStack>
-                            </RadzenAlert>
+                            <RadzenStack Gap="2rem" Class="rz-mt-4 animate-fade-in">
+                                <div class="header-section text-center">
+                                     <h2 class="title">@L["SMSTextOrWhatsApp"]</h2>
+                                     <p class="description">@L["PhoneVerificationDescription"]</p>
+                                </div>
 
-                            @if (string.IsNullOrEmpty(qrCodeUri))
-                            {
-                                <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" Class="rz-mt-4">
-                                    <RadzenButton Text="@L["EnableTwoFactor"]" Icon="add_moderator" ButtonStyle="ButtonStyle.Primary" 
-                                                  Variant="Variant.Filled" Click="@EnableTwoFactor" Size="ButtonSize.Large" 
-                                                  Style="border-radius: 25px; font-weight: bold; width: 100%; max-width: 300px;" />
-                                </RadzenStack>
-                            }
-                            else
-                            {
-                                <RadzenStack Gap="2rem" Class="rz-mt-4 animate-fade-in">
-                                    <RadzenStack AlignItems="AlignItems.Center" Gap="1rem">
-                                        <RadzenText TextStyle="TextStyle.H6" Style="font-weight: bold;">@L["ScanQRCode"]</RadzenText>
-                                        <RadzenText TextStyle="TextStyle.Body2" Class="rz-text-align-center rz-px-6">@L["ScanQRCodeDescription"]</RadzenText>
-                                        
-                                        <RadzenCard Variant="Variant.Outlined" Class="rz-background-color-white rz-p-3 rz-border-radius-2 rz-shadow-2">
-                                            <img src="@qrCodeUri" alt="QR Code" style="width: 200px; height: 200px;" />
-                                        </RadzenCard>
-                                    </RadzenStack>
-
-                                    <RadzenStack Gap="0.5rem" Class="rz-mb-2">
-                                        <RadzenText TextStyle="TextStyle.Overline" Style="font-weight: bold; color: var(--rz-text-secondary-color);" Class="rz-text-align-center rz-m-0">
-                                            @L["ManualEntry"]
-                                        </RadzenText>
-                                        <RadzenCard Variant="Variant.Filled" Class="rz-background-color-info-lighter rz-p-4 rz-text-align-center" Style="border: 2px dashed var(--rz-info); border-radius: 12px; overflow: hidden;">
-                                            <RadzenText TextStyle="TextStyle.Subtitle1" Class="rz-m-0 rz-color-info" 
-                                                        Style="font-family: monospace; letter-spacing: 2px; font-weight: bold; word-break: break-all; line-height: 1.5;">
-                                                @sharedKey
-                                            </RadzenText>
-                                        </RadzenCard>
-                                    </RadzenStack>
-
-                                    <RadzenStack Gap="0.5rem">
-                                        <RadzenText TextStyle="TextStyle.Caption" Style="font-weight: bold; text-transform: uppercase;">@L["VerificationCode"]</RadzenText>
-                                        <RadzenTextBox @bind-Value="verificationCode" Placeholder="000000" MaxLength="6" 
-                                                       Class="rz-w-100 rz-text-align-center" Style="height: 50px; font-size: 1.5rem; border-radius: 12px; border: 2px solid var(--rz-primary-lighter);" />
-                                    </RadzenStack>
-
-                                    <RadzenStack Gap="1rem">
-                                        <RadzenButton Text="@L["VerifyAndEnable"]" Icon="verified_user" ButtonStyle="ButtonStyle.Success" 
-                                                      Variant="Variant.Filled" Click="@VerifyAndEnableTwoFactor" Size="ButtonSize.Large" 
-                                                      Style="border-radius: 25px; font-weight: bold;" />
-                                        
-                                        <RadzenButton Text="@L["Cancel"]" ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" 
-                                                      Click="@CancelSetup" Style="font-weight: bold; color: var(--rz-text-secondary-color);" />
-                                    </RadzenStack>
-                                </RadzenStack>
-                            }
-                        }
-
-                        @if (recoveryCodes != null && recoveryCodes.Any())
-                        {
-                            <RadzenStack Gap="1rem" Class="rz-mt-6 rz-pt-6" Style="border-top: 1px solid var(--rz-border-color);">
-                                <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" AllowClose="false">
-                                    <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem">
-                                        <RadzenIcon Icon="save" />
-                                        <RadzenStack Gap="0">
-                                            <RadzenText TextStyle="TextStyle.Subtitle1" Class="rz-m-0" Style="font-weight: bold;">@L["RecoveryCodes"]</RadzenText>
-                                            <RadzenText TextStyle="TextStyle.Caption" Class="rz-m-0">@L["RecoveryCodesDescription"]</RadzenText>
-                                        </RadzenStack>
-                                    </RadzenStack>
-                                </RadzenAlert>
-
-                                <RadzenRow Gap="0.5rem">
-                                    @foreach (var recoveryCode in recoveryCodes)
+                                <div class="sms-setup-section">
+                                    @if (!smsCodeSent)
                                     {
-                                        <RadzenColumn Size="6" SizeSM="4" SizeMD="3">
-                                            <RadzenCard Variant="Variant.Outlined" Class="rz-p-2 rz-text-align-center" Style="font-family: monospace; font-size: 0.85rem; background: var(--rz-base-background-color);">
-                                                @recoveryCode
-                                            </RadzenCard>
-                                        </RadzenColumn>
+                                        <div class="form-group-custom">
+                                            @if (!string.IsNullOrEmpty(smsPhoneNumber))
+                                            {
+                                                <div class="linked-phone-alert">
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                                    <span>@L["UsingLinkedPhoneNumber"]: <strong style="direction: ltr; display: inline-block; unicode-bidi: plaintext;">@smsPhoneNumber</strong></span>
+                                                </div>
+                                                <button class="btn-secondary-link" @onclick="() => showPhoneNumberInput = true">@L["ChangePhoneNumber"]</button>
+                                            }
+                                            
+                                            @if (string.IsNullOrEmpty(smsPhoneNumber) || showPhoneNumberInput)
+                                            {
+                                                <div class="rz-mt-4">
+                                                    <label class="section-title">@L["PhoneNumber"]</label>
+                                                    <div class="phone-input-wrapper">
+                                                        <RadzenTextBox @bind-Value="smsPhoneNumber" Placeholder="+966 50 000 0000" 
+                                                                       Class="password-field" Style="text-align: left; direction: ltr;" />
+                                                    </div>
+                                                    <p class="sms-hint">@L["TwilioPermissionHint"]</p>
+                                                </div>
+                                            }
+                                        </div>
                                     }
-                                </RadzenRow>
+                                    else
+                                    {
+                                        <div class="form-group-custom">
+                                            <label class="section-title">@L["VerificationCode"]</label>
+                                            <RadzenTextBox @bind-Value="smsVerificationCode" Placeholder="000000" MaxLength="6" 
+                                                           Class="code-input" />
+                                            <p class="description rz-mt-2">@L["SentCodeTo"] <strong>@smsPhoneNumber</strong></p>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="action-footer">
+                                    @if (!smsCodeSent)
+                                    {
+                                        <button class="btn-primary-auth" @onclick="SendSmsCode" disabled="@isLoading">
+                                            @if (isLoading) { <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.ExtraSmall" Class="rz-mr-2" /> }
+                                            @L["SendVerificationCode"]
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn-primary-auth" @onclick="VerifySmsCode" disabled="@isLoading">
+                                            @if (isLoading) { <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.ExtraSmall" Class="rz-mr-2" /> }
+                                            @L["VerifyAndEnable"]
+                                        </button>
+                                        <RadzenButton Text="@L["ChangePhoneNumber"]" ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" 
+                                                      Click="() => smsCodeSent = false" Class="rz-mt-2 rz-w-100" />
+                                    }
+                                    
+                                    <RadzenButton Text="@L["Cancel"]" ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" 
+                                                  Click="@CancelSetup" Style="font-weight: bold; color: var(--rz-text-secondary-color);" Class="rz-mt-2 rz-w-100" />
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(errorMessage))
+                                {
+                                    <div class="error-text text-center">@errorMessage</div>
+                                }
                             </RadzenStack>
                         }
+                        else if (currentStep == TwoFactorStep.SetupEmail)
+                        {
+                            <RadzenStack Gap="2rem" Class="rz-mt-4 animate-fade-in">
+                                <div class="header-section text-center">
+                                     <h2 class="title">@L["EmailVerification"]</h2>
+                                     <p class="description">@L["EmailVerificationDescription"]</p>
+                                </div>
 
-                        @if (!string.IsNullOrEmpty(errorMessage))
-                        {
-                            <RadzenAlert AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter" Class="rz-mt-4 animate-shake">
-                                @errorMessage
-                            </RadzenAlert>
+                                <div class="sms-setup-section">
+                                    @if (!emailCodeSent)
+                                    {
+                                        <div class="form-group-custom">
+                                            <div class="linked-phone-alert">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                                <span>@L["UsingEmail"]: <strong>@emailAddress</strong></span>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="form-group-custom">
+                                            <label class="section-title">@L["VerificationCode"]</label>
+                                            <RadzenTextBox @bind-Value="emailVerificationCode" Placeholder="000000" MaxLength="6" 
+                                                           Class="code-input" />
+                                            <p class="description rz-mt-2">@L["SentCodeTo"] <strong>@emailAddress</strong></p>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="action-footer">
+                                    @if (!emailCodeSent)
+                                    {
+                                        <button class="btn-primary-auth" @onclick="SendEmailCode" disabled="@isLoading">
+                                            @if (isLoading) { <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.ExtraSmall" Class="rz-mr-2" /> }
+                                            @L["SendVerificationCode"]
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn-primary-auth" @onclick="VerifyEmailCode" disabled="@isLoading">
+                                            @if (isLoading) { <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.ExtraSmall" Class="rz-mr-2" /> }
+                                            @L["VerifyAndEnable"]
+                                        </button>
+                                        <RadzenButton Text="@L["ResendCode"]" ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" 
+                                                      Click="SendEmailCode" Class="rz-mt-2 rz-w-100" />
+                                    }
+                                    
+                                    <RadzenButton Text="@L["Cancel"]" ButtonStyle="ButtonStyle.Base" Variant="Variant.Text" 
+                                                  Click="@CancelSetup" Style="font-weight: bold; color: var(--rz-text-secondary-color);" Class="rz-mt-2 rz-w-100" />
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(errorMessage))
+                                {
+                                    <div class="error-text text-center">@errorMessage</div>
+                                }
+                            </RadzenStack>
                         }
-                        @if (!string.IsNullOrEmpty(successMessage))
-                        {
-                            <RadzenAlert AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Shade="Shade.Lighter" Class="rz-mt-4 animate-fade-in">
-                                @successMessage
-                            </RadzenAlert>
-                        }
-                    </RadzenStack>
-                </RadzenCard>
-            }
-        </RadzenColumn>
-    </RadzenRow>
-</RadzenStack>
+                        
+                    </RadzenCard>
+                }
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenStack>
+</div>
 
 <style>
-    .animate-fade-in { animation: fadeIn 0.5s ease-out; }
-    .animate-shake { animation: shake 0.5s ease-in-out; }
-    
-    @@keyframes fadeIn { 
-        from { opacity: 0; transform: translateY(10px); } 
-        to { opacity: 1; transform: translateY(0); } 
+    :root {
+        --auth-primary: #4f46e5;
+        --auth-primary-hover: #4338ca;
+        --auth-text: #1e293b;
+        --auth-text-sec: #64748b;
+        --auth-border: #e2e8f0;
+        --auth-bg-selected: #eff6ff;
+        --auth-danger-bg: #fef2f2;
+        --auth-danger-text: #ef4444;
     }
-    
-    @@keyframes shake { 
-        0%, 100% { transform: translateX(0); } 
-        25% { transform: translateX(-8px); } 
-        75% { transform: translateX(8px); } 
+
+    .auth-container { font-family: inherit; }
+    .text-center { text-align: center !important; }
+
+    .auth-card {
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        background: white;
+        border: 1px solid var(--auth-border);
     }
-    
+
+    .header-section { margin-bottom: 2rem; }
+    .shield-icon { margin-bottom: 1.5rem; color: var(--auth-primary); }
+    .title { font-size: 1.75rem; font-weight: 700; color: var(--auth-text); margin-bottom: 0.75rem; }
+    .description { color: var(--auth-text-sec); font-size: 1rem; line-height: 1.6; }
+    .link { color: var(--auth-primary); text-decoration: none; font-weight: 600; }
+    .link:hover { text-decoration: underline; }
+
+    .section-title { font-size: 1.15rem; font-weight: 700; color: var(--auth-text); margin-bottom: 1.25rem; display: block; text-align: inherit; }
+
+    .option-card {
+        display: flex;
+        align-items: center;
+        padding: 1.25rem;
+        border: 2px solid var(--auth-border);
+        border-radius: 16px;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        gap: 1rem;
+        position: relative;
+    }
+
+    .option-card:hover { border-color: var(--auth-primary); background-color: #f8fafc; }
+    .option-card.selected { border-color: var(--auth-primary); background-color: var(--auth-bg-selected); }
+
+    .option-icon { flex-shrink: 0; color: var(--auth-text); display: flex; align-items: center; }
+    .option-card.selected .option-icon { color: var(--auth-primary); }
+
+    .option-content { flex-grow: 1; display: flex; flex-direction: column; gap: 0.25rem; }
+    .option-label { font-size: 1.05rem; font-weight: 600; color: var(--auth-text); }
+    .option-desc { font-size: 0.875rem; color: var(--auth-text-sec); line-height: 1.4; }
+
+    .badge-recommended {
+        display: inline-block;
+        align-self: flex-start;
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 2px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-top: 0.5rem;
+    }
+
+    .option-check { flex-shrink: 0; }
+    .custom-radio {
+        width: 22px;
+        height: 22px;
+        border: 2px solid var(--auth-border);
+        border-radius: 50%;
+        position: relative;
+        background: white;
+    }
+    .option-card.selected .custom-radio { border-color: var(--auth-primary); }
+    .option-card.selected .custom-radio::after {
+        content: '';
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background: var(--auth-primary);
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .action-footer { margin-top: 2rem; }
+    .action-footer.double-btn { display: flex; gap: 1rem; }
+
+    .btn-primary-auth {
+        width: 100%;
+        padding: 14px;
+        background: var(--auth-primary);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-primary-auth:hover { background: var(--auth-primary-hover); transform: translateY(-1px); }
+
+    .btn-cancel-auth {
+        width: 100%;
+        padding: 14px;
+        background: #f1f5f9;
+        color: #475569;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+    .btn-cancel-auth:hover { background: #e2e8f0; }
+
+    .password-box { margin-bottom: 2rem; }
+    .password-wrapper { position: relative; width: 100%; }
+    .password-field {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid var(--auth-border);
+        border-radius: 12px;
+        outline: none;
+        transition: border-color 0.2s;
+        font-size: 1rem;
+        background: white;
+        box-sizing: border-box;
+    }
+    .password-field:focus { border-color: var(--auth-primary); }
+    .visibility-toggle {
+        position: absolute;
+        inset-inline-end: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: var(--auth-text-sec);
+        display: flex;
+        align-items: center;
+        padding: 6px;
+        border-radius: 50%;
+    }
+    .visibility-toggle:hover { background: #f1f5f9; color: var(--auth-primary); }
+    .error-text { color: #dc2626; font-size: 0.9rem; margin-top: 0.6rem; font-weight: 500; }
+
+    .qr-frame { background: white; padding: 1.25rem; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .qr-img { width: 200px; height: 200px; display: block; }
+    .recovery-item {
+        background: #f8fafc;
+        padding: 0.5rem;
+        border: 1px solid var(--auth-border);
+        border-radius: 8px;
+        text-align: center;
+        font-family: monospace;
+        font-size: 0.9rem;
+    }
+
+    .linked-phone-alert {
+        background: #f0f9ff;
+        color: #0369a1;
+        padding: 1rem;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        border: 1px solid #bae6fd;
+    }
+
+    .btn-secondary-link {
+        background: none;
+        border: none;
+        color: var(--auth-primary);
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0.5rem 0;
+        text-decoration: underline;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+
+    .sms-hint {
+        font-size: 0.8rem;
+        color: var(--auth-text-sec);
+        margin-top: 0.5rem;
+        line-height: 1.4;
+    }
+    .manual-key-box {
+        background: #f8fafc;
+        padding: 1rem;
+        border: 2px dashed var(--auth-primary);
+        border-radius: 12px;
+        font-family: monospace;
+        letter-spacing: 2px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--auth-primary);
+        text-align: center;
+        word-break: break-all;
+    }
+    .code-input {
+        height: 54px !important;
+        font-size: 1.75rem !important;
+        text-align: center !important;
+        border-radius: 12px !important;
+        border: 2px solid var(--auth-border) !important;
+        width: 100%;
+    }
+    .code-input:focus { border-color: var(--auth-primary) !important; }
+    .btn-rounded-full { border-radius: 50px !important; }
+    .btn-content { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .success-icon { color: var(--rz-success); flex-shrink: 0; }
+
+    .recovery-card { max-width: 600px; margin: 0 auto; }
+    .recovery-alert-box {
+        background: var(--auth-danger-bg);
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: flex;
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+        align-items: flex-start;
+    }
+    .alert-side-icon { color: var(--auth-danger-text); flex-shrink: 0; margin-top: 0.25rem; }
+    .alert-main-content { flex: 1; }
+    .recovery-title { font-size: 1.35rem; font-weight: 700; color: #1e293b; margin: 0 0 0.75rem 0; }
+    .recovery-desc-flex { display: flex; gap: 0.75rem; align-items: flex-start; color: var(--auth-text-sec); }
+    .floppy-icon { color: var(--auth-danger-text); flex-shrink: 0; margin-top: 0.2rem; }
+    .recovery-desc-flex p { margin: 0; font-size: 1rem; line-height: 1.6; }
+
+    .recovery-codes-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.15rem;
+        margin-bottom: 2.5rem;
+    }
+    .recovery-item-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.85rem;
+        text-align: center;
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: 700;
+        color: #475569;
+        font-size: 1.05rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .recovery-footer { border-top: 1px solid var(--auth-border); padding-top: 1.5rem; }
+    .btn-close-recovery {
+        background: transparent;
+        border: none;
+        color: #334155;
+        font-size: 1.25rem;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 0.5rem 2.5rem;
+        width: 100%;
+        transition: color 0.2s;
+    }
+    .btn-close-recovery:hover { color: var(--auth-primary); }
+
+    @@media (max-width: 480px) {
+        .recovery-codes-grid { grid-template-columns: repeat(2, 1fr); }
+    }
 </style>
 
-
 @code {
+    private enum TwoFactorStep { None, Selection, PasswordVerification, SetupAuthenticator, SetupSMS, SetupEmail }
+    private enum TwoFactorOption { Authenticator, SMS, Email }
+
     private bool isLoading = true;
     private bool isTwoFactorEnabled = false;
+    private TwoFactorStep currentStep = TwoFactorStep.None;
+    private TwoFactorOption selectedOption = TwoFactorOption.Authenticator;
+    private string confirmPassword = string.Empty;
+    private string errorMessage = string.Empty;
+
+
+    // Authenticator Data
     private string qrCodeUri = string.Empty;
     private string sharedKey = string.Empty;
     private string verificationCode = string.Empty;
     private IEnumerable<string>? recoveryCodes;
-    private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
+    
+    // SMS Data
+    private string smsPhoneNumber = string.Empty;
+    private string smsVerificationCode = string.Empty;
+    private bool smsCodeSent = false;
+    private bool showPhoneNumberInput = false;
+
+    // Email Data
+    private string emailAddress = string.Empty;
+    private string emailVerificationCode = string.Empty;
+    private bool emailCodeSent = false;
+    
+    // Password visibility
+    private bool showPassword = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -194,11 +690,86 @@
         {
             var status = await TwoFactorAppService.GetStatusAsync();
             isTwoFactorEnabled = status.IsEnabled;
+            if (!isTwoFactorEnabled)
+            {
+                currentStep = TwoFactorStep.Selection;
+            }
+            else
+            {
+                currentStep = TwoFactorStep.None;
+            }
+            
+            var smsStatus = await TwoFactorAppService.GetSmsStatusAsync();
+            smsPhoneNumber = smsStatus.PhoneNumber ?? string.Empty;
+
+            var emailStatus = await TwoFactorAppService.GetEmailStatusAsync();
+            emailAddress = emailStatus.Email ?? string.Empty;
+        }
+        catch (Exception)
+        {
+            errorMessage = L["ErrorLoadingData"];
+        }
+    }
+
+    private void SelectOption(TwoFactorOption option)
+    {
+        selectedOption = option;
+    }
+
+    private void ProceedToPassword()
+    {
+        currentStep = TwoFactorStep.PasswordVerification;
+        errorMessage = string.Empty;
+        confirmPassword = string.Empty;
+        showPassword = false;
+    }
+    
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+    }
+
+    private async Task VerifyPassword()
+    {
+        if (string.IsNullOrWhiteSpace(confirmPassword))
+        {
+            errorMessage = L["PasswordRequired"];
+            return;
+        }
+
+        isLoading = true;
+        try
+        {
+            var isValid = await TwoFactorAppService.CheckPasswordAsync(confirmPassword);
+            if (isValid)
+            {
+                if (selectedOption == TwoFactorOption.Authenticator)
+                {
+                    await EnableTwoFactor();
+                }
+                else if (selectedOption == TwoFactorOption.SMS)
+                {
+                    currentStep = TwoFactorStep.SetupSMS;
+                    smsCodeSent = false;
+                    isLoading = false;
+                }
+                else if (selectedOption == TwoFactorOption.Email)
+                {
+                    currentStep = TwoFactorStep.SetupEmail;
+                    emailCodeSent = false;
+                    isLoading = false;
+                }
+            }
+            else
+            {
+                errorMessage = L["InvalidPassword"];
+                isLoading = false; 
+            }
         }
         catch (Exception ex)
         {
-            errorMessage = L["ErrorLoadingData"];
-            Console.WriteLine(ex.Message);
+            errorMessage = ex.Message;
+            isLoading = false;
         }
     }
 
@@ -206,11 +777,73 @@
     {
         try
         {
-            isLoading = true;
-            errorMessage = string.Empty;
             var setup = await TwoFactorAppService.SetupAsync();
             sharedKey = setup.SharedKey;
             qrCodeUri = setup.QrCodeUri;
+            currentStep = TwoFactorStep.SetupAuthenticator;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+            confirmPassword = string.Empty; // Clear password
+        }
+    }
+    
+    private async Task SendSmsCode()
+    {
+        if (string.IsNullOrWhiteSpace(smsPhoneNumber))
+        {
+            errorMessage = L["PhoneNumberRequired"];
+            return;
+        }
+
+        isLoading = true;
+        errorMessage = string.Empty;
+        try
+        {
+            await TwoFactorAppService.SendSmsCodeAsync(new SendSmsCodeDto { PhoneNumber = smsPhoneNumber });
+            smsCodeSent = true;
+            NotificationService.Notify(NotificationSeverity.Success, L["Success"], L["VerificationCodeSent"]);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task VerifySmsCode()
+    {
+        if (string.IsNullOrWhiteSpace(smsVerificationCode))
+        {
+            errorMessage = L["VerificationCodeRequired"];
+            return;
+        }
+
+        isLoading = true;
+        errorMessage = string.Empty;
+        try
+        {
+            var result = await TwoFactorAppService.VerifySmsAndEnableAsync(new VerifySmsCodeDto 
+            { 
+                PhoneNumber = smsPhoneNumber, 
+                Code = smsVerificationCode 
+            });
+            recoveryCodes = result.RecoveryCodes;
+            
+            isTwoFactorEnabled = true;
+            currentStep = TwoFactorStep.None;
+            smsCodeSent = false;
+            smsVerificationCode = string.Empty;
+            
+            NotificationService.Notify(NotificationSeverity.Success, L["Success"], L["TwoFactorEnabledSuccessfully"]);
         }
         catch (Exception ex)
         {
@@ -227,7 +860,6 @@
         try
         {
             errorMessage = string.Empty;
-            successMessage = string.Empty;
             
             if (string.IsNullOrWhiteSpace(verificationCode))
             {
@@ -239,10 +871,11 @@
             recoveryCodes = result.RecoveryCodes;
             
             isTwoFactorEnabled = true;
+            currentStep = TwoFactorStep.None;
             qrCodeUri = string.Empty;
             verificationCode = string.Empty;
             
-            successMessage = L["TwoFactorEnabledSuccessfully"];
+            NotificationService.Notify(NotificationSeverity.Success, L["Success"], L["TwoFactorEnabledSuccessfully"]);
         }
         catch (Exception ex)
         {
@@ -254,14 +887,10 @@
     {
         try
         {
-            errorMessage = string.Empty;
-            successMessage = string.Empty;
-            
             await TwoFactorAppService.DisableAsync();
             isTwoFactorEnabled = false;
-            recoveryCodes = null;
-            
-            successMessage = L["TwoFactorDisabledSuccessfully"];
+            currentStep = TwoFactorStep.Selection;
+            NotificationService.Notify(NotificationSeverity.Success, L["Success"], L["TwoFactorDisabledSuccessfully"]);
         }
         catch (Exception ex)
         {
@@ -271,9 +900,70 @@
 
     private void CancelSetup()
     {
+        currentStep = TwoFactorStep.Selection;
         qrCodeUri = string.Empty;
         sharedKey = string.Empty;
         verificationCode = string.Empty;
+        smsVerificationCode = string.Empty;
+        smsCodeSent = false;
+        emailVerificationCode = string.Empty;
+        emailCodeSent = false;
         errorMessage = string.Empty;
+    }
+
+    private async Task SendEmailCode()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+        try
+        {
+            await TwoFactorAppService.SendEmailCodeAsync(new SendEmailCodeDto { Email = emailAddress });
+            emailCodeSent = true;
+            NotificationService.Notify(NotificationSeverity.Success, L["Success"], L["VerificationCodeSent"]);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task VerifyEmailCode()
+    {
+        if (string.IsNullOrWhiteSpace(emailVerificationCode))
+        {
+            errorMessage = L["VerificationCodeRequired"];
+            return;
+        }
+
+        isLoading = true;
+        errorMessage = string.Empty;
+        try
+        {
+            var result = await TwoFactorAppService.VerifyEmailAndEnableAsync(new VerifyEmailCodeDto 
+            { 
+                Email = emailAddress, 
+                Code = emailVerificationCode 
+            });
+            recoveryCodes = result.RecoveryCodes;
+            
+            isTwoFactorEnabled = true;
+            currentStep = TwoFactorStep.None;
+            emailCodeSent = false;
+            emailVerificationCode = string.Empty;
+            
+            NotificationService.Notify(NotificationSeverity.Success, L["Success"], L["TwoFactorEnabledSuccessfully"]);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 }
