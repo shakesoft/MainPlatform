@@ -17,6 +17,7 @@ using Volo.Abp.BlobStoring.Database.EntityFrameworkCore;
 using Volo.Abp.Gdpr;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using OPAC.EntityFrameworkCore;
+using Collaboration.EntityFrameworkCore;
 
 namespace MainPlatform.EntityFrameworkCore;
 
@@ -37,7 +38,8 @@ namespace MainPlatform.EntityFrameworkCore;
     typeof(BlobStoringDatabaseEntityFrameworkCoreModule),
     typeof(OPACEntityFrameworkCoreModule)
     )]
-public class MainPlatformEntityFrameworkCoreModule : AbpModule
+[DependsOn(typeof(CollaborationEntityFrameworkCoreModule))]
+    public class MainPlatformEntityFrameworkCoreModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {

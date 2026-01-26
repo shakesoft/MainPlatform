@@ -12,7 +12,7 @@
     <ProjectReference Include="..\MainPlatform.Domain\MainPlatform.Domain.csproj" />
     <ProjectReference Include="..\MainPlatform.Application.Contracts\MainPlatform.Application.Contracts.csproj" />
     <ProjectReference Include="..\..\modules\OPAC\src\OPAC.Application\OPAC.Application.csproj" />
-  </ItemGroup>
+  <ProjectReference Include="..\..\modules\Collaboration\src\Collaboration.Application\Collaboration.Application.csproj" /></ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Volo.Abp.PermissionManagement.Application" Version="10.0.2" />

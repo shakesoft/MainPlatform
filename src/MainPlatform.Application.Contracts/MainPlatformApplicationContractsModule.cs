@@ -1,4 +1,4 @@
-﻿using Volo.Abp.Account;
+using Volo.Abp.Account;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
@@ -11,6 +11,7 @@ using Volo.Saas.Host;
 using Volo.Abp.Gdpr;
 using Volo.Abp.OpenIddict;
 using OPAC;
+using Collaboration;
 
 namespace MainPlatform;
 
@@ -30,7 +31,8 @@ namespace MainPlatform;
     typeof(TextTemplateManagementApplicationContractsModule),
     typeof(OPACApplicationContractsModule)
 )]
-public class MainPlatformApplicationContractsModule : AbpModule
+[DependsOn(typeof(CollaborationApplicationContractsModule))]
+    public class MainPlatformApplicationContractsModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {

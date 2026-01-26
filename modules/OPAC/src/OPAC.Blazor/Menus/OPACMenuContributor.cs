@@ -17,6 +17,7 @@ public class OPACMenuContributor : IMenuContributor
     {
         //Add main menu items.
         context.Menu.AddItem(new ApplicationMenuItem(OPACMenus.Prefix, displayName: "OPAC", "/OPAC", icon: "fa fa-globe"));
+        context.Menu.AddItem(new ApplicationMenuItem(OPACMenus.Prefix, displayName: "Test", "/OPAC", icon: "fa fa-globe"));
 
         return Task.CompletedTask;
     }

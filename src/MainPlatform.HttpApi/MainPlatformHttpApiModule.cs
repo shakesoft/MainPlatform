@@ -1,4 +1,4 @@
-﻿using Localization.Resources.AbpUi;
+using Localization.Resources.AbpUi;
 using MainPlatform.Localization;
 using Volo.Abp.Account;
 using Volo.Abp.AuditLogging;
@@ -14,6 +14,7 @@ using Volo.Abp.TextTemplateManagement;
 using Volo.Abp.Gdpr;
 using Volo.Abp.OpenIddict;
 using OPAC;
+using Collaboration;
 
 namespace MainPlatform;
 
@@ -33,7 +34,8 @@ namespace MainPlatform;
     typeof(TextTemplateManagementHttpApiModule),
     typeof(OPACHttpApiModule)
     )]
-public class MainPlatformHttpApiModule : AbpModule
+[DependsOn(typeof(CollaborationHttpApiModule))]
+    public class MainPlatformHttpApiModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {

@@ -11,7 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MainPlatform.Domain.Shared\MainPlatform.Domain.Shared.csproj" />
     <ProjectReference Include="..\..\modules\OPAC\src\OPAC.Application.Contracts\OPAC.Application.Contracts.csproj" />
-  </ItemGroup>
+  <ProjectReference Include="..\..\modules\Collaboration\src\Collaboration.Application.Contracts\Collaboration.Application.Contracts.csproj" /></ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Volo.Abp.PermissionManagement.Application.Contracts" Version="10.0.2" />

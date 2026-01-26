@@ -1,0 +1,36 @@
+<Solution>
+  <Folder Name="/host/">
+    <Project Path="host/Collaboration.AuthServer/Collaboration.AuthServer.csproj" />
+    <Project Path="host/Collaboration.Blazor.Host.Client/Collaboration.Blazor.Host.Client.csproj" />
+    <Project Path="host/Collaboration.Blazor.Host/Collaboration.Blazor.Host.csproj" />
+    <Project Path="host/Collaboration.Blazor.Server.Host/Collaboration.Blazor.Server.Host.csproj" />
+    <Project Path="host/Collaboration.Host.Shared/Collaboration.Host.Shared.csproj" />
+    <Project Path="host/Collaboration.HttpApi.Host/Collaboration.HttpApi.Host.csproj" />
+    <Project Path="host/Collaboration.Web.Host/Collaboration.Web.Host.csproj" />
+    <Project Path="host/Collaboration.Web.Unified/Collaboration.Web.Unified.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Collaboration.Application.Contracts/Collaboration.Application.Contracts.csproj" />
+    <Project Path="src/Collaboration.Application/Collaboration.Application.csproj" />
+    <Project Path="src/Collaboration.Blazor.Server/Collaboration.Blazor.Server.csproj" />
+    <Project Path="src/Collaboration.Blazor.WebAssembly.Bundling/Collaboration.Blazor.WebAssembly.Bundling.csproj" />
+    <Project Path="src/Collaboration.Blazor.WebAssembly/Collaboration.Blazor.WebAssembly.csproj" />
+    <Project Path="src/Collaboration.Blazor/Collaboration.Blazor.csproj" />
+    <Project Path="src/Collaboration.Domain.Shared/Collaboration.Domain.Shared.csproj" />
+    <Project Path="src/Collaboration.Domain/Collaboration.Domain.csproj" />
+    <Project Path="src/Collaboration.EntityFrameworkCore/Collaboration.EntityFrameworkCore.csproj" />
+    <Project Path="src/Collaboration.HttpApi.Client/Collaboration.HttpApi.Client.csproj" />
+    <Project Path="src/Collaboration.HttpApi/Collaboration.HttpApi.csproj" />
+    <Project Path="src/Collaboration.Installer/Collaboration.Installer.csproj" />
+    <Project Path="src/Collaboration.MongoDB/Collaboration.MongoDB.csproj" />
+    <Project Path="src/Collaboration.Web/Collaboration.Web.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/Collaboration.Application.Tests/Collaboration.Application.Tests.csproj" />
+    <Project Path="test/Collaboration.Domain.Tests/Collaboration.Domain.Tests.csproj" />
+    <Project Path="test/Collaboration.EntityFrameworkCore.Tests/Collaboration.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="test/Collaboration.HttpApi.Client.ConsoleTestApp/Collaboration.HttpApi.Client.ConsoleTestApp.csproj" />
+    <Project Path="test/Collaboration.MongoDB.Tests/Collaboration.MongoDB.Tests.csproj" />
+    <Project Path="test/Collaboration.TestBase/Collaboration.TestBase.csproj" />
+  </Folder>
+</Solution>

@@ -18,6 +18,7 @@ using Volo.Abp.BlobStoring.Database;
 using Volo.Abp.Gdpr;
 using Volo.Abp.GlobalFeatures;
 using OPAC;
+using Collaboration;
 
 namespace MainPlatform;
 
@@ -37,7 +38,8 @@ namespace MainPlatform;
     typeof(BlobStoringDatabaseDomainSharedModule),
     typeof(OPACDomainSharedModule)
     )]
-public class MainPlatformDomainSharedModule : AbpModule
+[DependsOn(typeof(CollaborationDomainSharedModule))]
+    public class MainPlatformDomainSharedModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {

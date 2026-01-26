@@ -13,6 +13,7 @@ using Volo.Abp.SettingManagement;
 using Volo.Abp.TextTemplateManagement;
 using Volo.Saas.Host;
 using OPAC;
+using Collaboration;
 
 namespace MainPlatform;
 
@@ -33,7 +34,8 @@ namespace MainPlatform;
     typeof(TextTemplateManagementApplicationModule),
     typeof(OPACApplicationModule)
     )]
-public class MainPlatformApplicationModule : AbpModule
+[DependsOn(typeof(CollaborationApplicationModule))]
+    public class MainPlatformApplicationModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {

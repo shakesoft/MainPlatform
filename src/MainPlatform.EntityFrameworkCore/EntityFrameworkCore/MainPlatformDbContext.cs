@@ -18,6 +18,7 @@ using Volo.Saas.Tenants;
 using Volo.Abp.Gdpr;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using OPAC.EntityFrameworkCore;
+using Collaboration.EntityFrameworkCore;
 
 namespace MainPlatform.EntityFrameworkCore;
 
@@ -102,5 +103,6 @@ public class MainPlatformDbContext :
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
-    }
+        builder.ConfigureCollaboration();
+        }
 }
