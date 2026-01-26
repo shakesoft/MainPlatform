@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Account;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.FeatureManagement;
@@ -13,6 +13,7 @@ using Volo.Saas.Host;
 using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.Gdpr;
 using OPAC;
+using Collaboration;
 
 namespace MainPlatform;
 
@@ -32,7 +33,8 @@ namespace MainPlatform;
     typeof(TextTemplateManagementHttpApiClientModule),
     typeof(OPACHttpApiClientModule)
 )]
-public class MainPlatformHttpApiClientModule : AbpModule
+[DependsOn(typeof(CollaborationHttpApiClientModule))]
+    public class MainPlatformHttpApiClientModule : AbpModule
 {
     public const string RemoteServiceName = "Default";
 

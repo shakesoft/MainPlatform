@@ -11,7 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MainPlatform.Application.Contracts\MainPlatform.Application.Contracts.csproj" />
     <ProjectReference Include="..\..\modules\OPAC\src\OPAC.HttpApi\OPAC.HttpApi.csproj" />
-  </ItemGroup>
+  <ProjectReference Include="..\..\modules\Collaboration\src\Collaboration.HttpApi\Collaboration.HttpApi.csproj" /></ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Volo.Abp.PermissionManagement.HttpApi" Version="10.0.2" />

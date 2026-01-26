@@ -11,7 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MainPlatform.Domain.Shared\MainPlatform.Domain.Shared.csproj" />
     <ProjectReference Include="..\..\modules\OPAC\src\OPAC.Domain\OPAC.Domain.csproj" />
-  </ItemGroup>
+  <ProjectReference Include="..\..\modules\Collaboration\src\Collaboration.Domain\Collaboration.Domain.csproj" /></ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Volo.Abp.Emailing" Version="10.0.2" />

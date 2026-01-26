@@ -73,6 +73,7 @@ using Volo.Saas.Host.Blazor;
 using Volo.Saas.Host.Blazor.Server;
 using Volo.Saas.Host.Blazor.Server;
 using Radzen;
+using Collaboration.Blazor.Server;
 
 namespace MainPlatform.Blazor;
 
@@ -102,7 +103,8 @@ namespace MainPlatform.Blazor;
     typeof(OPACBlazorModule),
     typeof(OPACBlazorServerModule)
    )]
-public class MainPlatformBlazorModule : AbpModule
+[DependsOn(typeof(CollaborationBlazorServerModule))]
+    public class MainPlatformBlazorModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {

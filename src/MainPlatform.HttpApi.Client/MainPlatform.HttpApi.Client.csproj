@@ -12,7 +12,7 @@
     <ProjectReference Include="..\MainPlatform.Application.Contracts\MainPlatform.Application.Contracts.csproj" />
     <ProjectReference Include="..\..\modules\OPAC\src\OPAC.HttpApi.Client\OPAC.HttpApi.Client.csproj" />
     <ProjectReference Include="..\..\modules\OPAC\src\OPAC.Application.Contracts\OPAC.Application.Contracts.csproj" />
-  </ItemGroup>
+  <ProjectReference Include="..\..\modules\Collaboration\src\Collaboration.HttpApi.Client\Collaboration.HttpApi.Client.csproj" /></ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Volo.Abp.PermissionManagement.HttpApi.Client" Version="10.0.2" />

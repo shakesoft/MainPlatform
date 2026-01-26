@@ -22,6 +22,7 @@ using Volo.Abp.Gdpr;
 using Volo.Abp.OpenIddict;
 using Volo.Abp.PermissionManagement.OpenIddict;
 using OPAC;
+using Collaboration;
 
 namespace MainPlatform;
 
@@ -45,7 +46,8 @@ namespace MainPlatform;
     typeof(BlobStoringDatabaseDomainModule),
     typeof(OPACDomainModule)
     )]
-public class MainPlatformDomainModule : AbpModule
+[DependsOn(typeof(CollaborationDomainModule))]
+    public class MainPlatformDomainModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
