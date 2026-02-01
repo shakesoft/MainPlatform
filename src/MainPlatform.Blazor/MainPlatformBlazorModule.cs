@@ -20,7 +20,6 @@ using MainPlatform.Blazor.Menus;
 using MainPlatform.EntityFrameworkCore;
 using MainPlatform.Localization;
 using MainPlatform.MultiTenancy;
-using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Options;
 using MainPlatform.Blazor.Components;
 using OPAC;
@@ -74,6 +73,7 @@ using Volo.Saas.Host.Blazor.Server;
 using Volo.Saas.Host.Blazor.Server;
 using Radzen;
 using Collaboration.Blazor.Server;
+using Microsoft.OpenApi;
 
 namespace MainPlatform.Blazor;
 
