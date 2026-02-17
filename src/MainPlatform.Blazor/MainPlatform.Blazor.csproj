@@ -41,23 +41,23 @@
     <ProjectReference Include="..\MainPlatform.Application\MainPlatform.Application.csproj" />
     <ProjectReference Include="..\MainPlatform.HttpApi\MainPlatform.HttpApi.csproj" />
     <ProjectReference Include="..\MainPlatform.EntityFrameworkCore\MainPlatform.EntityFrameworkCore.csproj" />
-    <PackageReference Include="Volo.Abp.Autofac" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.Swashbuckle" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.AspNetCore.Serilog" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.Account.Pro.Public.Web.OpenIddict" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.Account.Pro.Public.Blazor.Server" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.Account.Pro.Admin.Blazor.Server" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.Account.Pro.Public.Web.Impersonation" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.AuditLogging.Blazor.Server" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.Identity.Pro.Blazor.Server" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.OpenIddict.Pro.Blazor.Server" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.LanguageManagement.Blazor.Server" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Saas.Host.Blazor.Server" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.TextTemplateManagement.Blazor.Server" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.Gdpr.Blazor.Server" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.FeatureManagement.Blazor.Server" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.SettingManagement.Blazor.Server" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.PermissionManagement.Blazor.Server" Version="10.1.0-rc.2" />
+    <PackageReference Include="Volo.Abp.Autofac" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.Swashbuckle" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Serilog" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.Account.Pro.Public.Web.OpenIddict" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.Account.Pro.Public.Blazor.Server" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.Account.Pro.Admin.Blazor.Server" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.Account.Pro.Public.Web.Impersonation" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.AuditLogging.Blazor.Server" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.Identity.Pro.Blazor.Server" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.OpenIddict.Pro.Blazor.Server" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.LanguageManagement.Blazor.Server" Version="10.1.0" />
+    <PackageReference Include="Volo.Saas.Host.Blazor.Server" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.TextTemplateManagement.Blazor.Server" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.Gdpr.Blazor.Server" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.Blazor.Server" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.SettingManagement.Blazor.Server" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Blazor.Server" Version="10.1.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.1" />
   </ItemGroup>
 

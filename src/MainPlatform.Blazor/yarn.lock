@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@abp/aspnetcore.components.server.theming@~10.1.0-rc.2":
+"@abp/aspnetcore.components.server.theming@~10.1.0":
   version "10.1.0-rc.2"
   resolved "https://registry.yarnpkg.com/@abp/aspnetcore.components.server.theming/-/aspnetcore.components.server.theming-10.1.0-rc.2.tgz#15565ed53a4dd2993cdf55e1f45471a71561553c"
   integrity sha512-ANeLb24L/EiEFzomkvkYCRbPmDiKUhcMuoPFU8pcHueupj05+4p1ihzHwSGbk/YJStffwHEEGXG2HWPJaHeUaA==

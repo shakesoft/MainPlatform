@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.Mapperly" Version="10.1.0-rc.2" />
-    <PackageReference Include="Volo.Abp.Ddd.Application" Version="10.1.0-rc.2" />
+    <PackageReference Include="Volo.Abp.Mapperly" Version="10.1.0" />
+    <PackageReference Include="Volo.Abp.Ddd.Application" Version="10.1.0" />
     <ProjectReference Include="..\OPAC.Application.Contracts\OPAC.Application.Contracts.csproj" />
     <ProjectReference Include="..\OPAC.Domain\OPAC.Domain.csproj" />
   </ItemGroup>
